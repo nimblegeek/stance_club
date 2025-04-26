@@ -49,6 +49,9 @@ export default function AuthPage() {
   const registerSchema = insertUserSchema.extend({
     password: z.string().min(6, "Password must be at least 6 characters"),
     confirmPassword: z.string(),
+    displayName: z.string().min(3, "Full name must be at least 3 characters"),
+    email: z.string().email("Please enter a valid email address"),
+    role: z.enum(["student", "instructor", "admin"]).default("student"),
   }).refine(data => data.password === data.confirmPassword, {
     message: "Passwords do not match",
     path: ["confirmPassword"],
@@ -226,6 +229,70 @@ export default function AuthPage() {
                           <FormControl>
                             <Input type="password" placeholder="••••••••" {...field} />
                           </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={registerForm.control}
+                      name="displayName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Full Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Enter your full name" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={registerForm.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input type="email" placeholder="your.email@example.com" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={registerForm.control}
+                      name="role"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Role</FormLabel>
+                          <div className="flex space-x-4">
+                            <FormItem className="flex items-center space-x-2">
+                              <FormControl>
+                                <input
+                                  type="radio"
+                                  className="form-radio"
+                                  checked={field.value === "student"}
+                                  onChange={() => field.onChange("student")}
+                                />
+                              </FormControl>
+                              <FormLabel className="font-normal cursor-pointer">
+                                Student
+                              </FormLabel>
+                            </FormItem>
+                            <FormItem className="flex items-center space-x-2">
+                              <FormControl>
+                                <input
+                                  type="radio"
+                                  className="form-radio"
+                                  checked={field.value === "instructor"}
+                                  onChange={() => field.onChange("instructor")}
+                                />
+                              </FormControl>
+                              <FormLabel className="font-normal cursor-pointer">
+                                Instructor
+                              </FormLabel>
+                            </FormItem>
+                          </div>
                           <FormMessage />
                         </FormItem>
                       )}

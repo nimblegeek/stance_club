@@ -8,7 +8,8 @@ export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
-  fullName: text("full_name"),
+  displayName: text("display_name"),
+  email: text("email"),
   role: text("role").default("student").notNull(),  // 'instructor', 'student', 'admin'
   createdAt: timestamp("created_at").defaultNow(),
 });
@@ -113,7 +114,8 @@ export const studentProgressRelations = relations(studentProgress, ({ one }) => 
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
-  fullName: true,
+  displayName: true,
+  email: true,
   role: true,
 });
 
