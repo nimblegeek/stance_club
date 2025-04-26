@@ -21,7 +21,7 @@ export default function NavHeader() {
   
   if (isLoading) {
     return (
-      <header className="bg-gray-900 border-b border-gray-800 px-4 py-3">
+      <header className="bg-card border-b border-border px-4 py-3">
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex items-center">
             <div className="flex items-center mr-8">
@@ -30,7 +30,7 @@ export default function NavHeader() {
                   <svg className="h-8 w-8" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
                   </svg>
-                  <span className="ml-2 text-lg font-bold text-white">ProjectHub</span>
+                  <span className="ml-2 text-lg font-bold text-card-foreground">DojoMaster</span>
                 </a>
               </Button>
             </div>
@@ -43,7 +43,7 @@ export default function NavHeader() {
 
   if (!user) {
     return (
-      <header className="bg-gray-900 border-b border-gray-800 px-4 py-3">
+      <header className="bg-card border-b border-border px-4 py-3">
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex items-center">
             <div className="flex items-center mr-8">
@@ -52,7 +52,7 @@ export default function NavHeader() {
                   <svg className="h-8 w-8" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
                   </svg>
-                  <span className="ml-2 text-lg font-bold text-white">ProjectHub</span>
+                  <span className="ml-2 text-lg font-bold text-card-foreground">DojoMaster</span>
                 </a>
               </Button>
             </div>
@@ -67,11 +67,11 @@ export default function NavHeader() {
   };
   
   const navItems = [
-    { name: "Home", icon: <Home className="h-4 w-4 mr-2" />, active: true },
-    { name: "Projects", icon: <Layers className="h-4 w-4 mr-2" /> },
-    { name: "Messages", icon: <MessageSquare className="h-4 w-4 mr-2" /> },
-    { name: "Activity", icon: <Activity className="h-4 w-4 mr-2" /> },
-    { name: "My Stuff", icon: <Briefcase className="h-4 w-4 mr-2" /> },
+    { name: "Dashboard", icon: <Home className="h-4 w-4 mr-2" />, active: true },
+    { name: "Classes", icon: <Calendar className="h-4 w-4 mr-2" /> },
+    { name: "Students", icon: <Users className="h-4 w-4 mr-2" /> },
+    { name: "Techniques", icon: <BookOpen className="h-4 w-4 mr-2" /> },
+    { name: "Promotions", icon: <Award className="h-4 w-4 mr-2" /> },
   ];
   
   return (
@@ -84,7 +84,7 @@ export default function NavHeader() {
                 <svg className="h-8 w-8" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
                 </svg>
-                <span className="ml-2 text-lg font-bold text-card-foreground">ProjectHub</span>
+                <span className="ml-2 text-lg font-bold text-card-foreground">DojoMaster</span>
               </a>
             </Button>
           </div>
