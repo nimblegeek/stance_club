@@ -75,7 +75,7 @@ export default function NavHeader() {
   ];
   
   return (
-    <header className="bg-gray-900 border-b border-gray-800 px-4 py-3">
+    <header className="bg-card border-b border-border px-4 py-3">
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center">
           <div className="flex items-center mr-8">
@@ -84,7 +84,7 @@ export default function NavHeader() {
                 <svg className="h-8 w-8" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
                 </svg>
-                <span className="ml-2 text-lg font-bold text-white">ProjectHub</span>
+                <span className="ml-2 text-lg font-bold text-card-foreground">ProjectHub</span>
               </a>
             </Button>
           </div>
@@ -95,7 +95,7 @@ export default function NavHeader() {
               <Button 
                 key={item.name}
                 variant="ghost" 
-                className={`text-sm ${item.active ? 'text-white' : 'text-gray-400'} hover:text-white`}
+                className={`text-sm ${item.active ? 'text-card-foreground' : 'text-muted-foreground'} hover:text-card-foreground`}
               >
                 {item.name}
               </Button>
@@ -114,10 +114,10 @@ export default function NavHeader() {
         </div>
         
         <div className="flex items-center space-x-3">
-          <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white">
+          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-card-foreground">
             <Search className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white">
+          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-card-foreground">
             <Bell className="h-5 w-5" />
           </Button>
           
@@ -147,13 +147,13 @@ export default function NavHeader() {
       
       {/* Mobile Navigation Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden py-2 px-4 mt-2 bg-gray-800 rounded-md">
+        <div className="md:hidden py-2 px-4 mt-2 bg-accent rounded-md">
           <nav className="flex flex-col space-y-2">
             {navItems.map((item) => (
               <Button 
                 key={item.name}
                 variant="ghost" 
-                className={`justify-start ${item.active ? 'text-white' : 'text-gray-400'} hover:text-white`}
+                className={`justify-start ${item.active ? 'text-card-foreground' : 'text-muted-foreground'} hover:text-card-foreground`}
               >
                 {item.icon}
                 {item.name}

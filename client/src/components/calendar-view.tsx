@@ -51,9 +51,9 @@ export default function CalendarView() {
   };
   
   return (
-    <Card className="bg-gray-900 border-gray-800">
+    <Card className="bg-card border-border">
       <CardContent className="p-4">
-        <div className="bg-gray-800 text-gray-300 py-1 px-3 text-sm font-medium rounded-md mb-4 inline-block">
+        <div className="bg-accent text-accent-foreground py-1 px-3 text-sm font-medium rounded-md mb-4 inline-block">
           YOUR SCHEDULE
         </div>
         
@@ -62,7 +62,7 @@ export default function CalendarView() {
           <Button variant="ghost" size="icon" onClick={previousMonth}>
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <h3 className="text-lg font-medium text-white">
+          <h3 className="text-lg font-medium text-card-foreground">
             {format(currentDate, "MMMM")}
           </h3>
           <Button variant="ghost" size="icon" onClick={nextMonth}>
@@ -73,7 +73,7 @@ export default function CalendarView() {
         {/* Calendar Grid */}
         <div className="grid grid-cols-7 text-center text-sm mb-2">
           {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((day) => (
-            <div key={day} className="py-1 text-gray-500">{day}</div>
+            <div key={day} className="py-1 text-muted-foreground">{day}</div>
           ))}
         </div>
         
@@ -88,13 +88,13 @@ export default function CalendarView() {
                 key={index}
                 className={cn(
                   "aspect-square flex items-center justify-center py-2 rounded-md cursor-pointer",
-                  isSelected ? "bg-gray-800" : "hover:bg-gray-800",
+                  isSelected ? "bg-accent" : "hover:bg-accent/50",
                   isCurrentDay && "font-semibold",
                 )}
                 onClick={() => setSelectedDate(day)}
               >
                 <span className={cn(
-                  isCurrentMonth ? "text-white" : "text-gray-500"
+                  isCurrentMonth ? "text-card-foreground" : "text-muted-foreground"
                 )}>
                   {format(day, "d")}
                 </span>
@@ -104,7 +104,7 @@ export default function CalendarView() {
         </div>
         
         {/* Calendar Footer */}
-        <div className="mt-4 flex items-center text-sm text-gray-400">
+        <div className="mt-4 flex items-center text-sm text-muted-foreground">
           <span className="inline-flex items-center">
             <CalendarIcon className="h-4 w-4 text-primary mr-2" />
             {format(selectedDate, "EEE, MMM d").toUpperCase()}

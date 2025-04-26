@@ -19,16 +19,16 @@ export default function ProjectCard({
 }: ProjectCardProps) {
   return (
     <Card className={cn(
-      "bg-gray-900 border-gray-800 hover:bg-gray-800 transition-colors duration-300", 
+      "bg-card border-border hover:bg-accent transition-colors duration-300", 
       className
     )}>
       <CardContent className="p-5">
         {isSample && (
           <div className="mb-1 text-sm text-orange-400">Sample</div>
         )}
-        <h3 className="text-lg font-semibold mb-2 text-white">{title}</h3>
+        <h3 className="text-lg font-semibold mb-2 text-card-foreground">{title}</h3>
         {description && (
-          <p className="text-gray-400 text-sm mb-4">{description}</p>
+          <p className="text-muted-foreground text-sm mb-4">{description}</p>
         )}
         
         {/* Add spacing when no description to match design */}
@@ -43,7 +43,7 @@ export default function ProjectCard({
             <UserAvatar 
               key={index}
               username={member}
-              className={members.length > 1 ? "ring-2 ring-gray-900" : ""}
+              className={members.length > 1 ? "ring-2 ring-card" : ""}
             />
           ))}
         </div>
