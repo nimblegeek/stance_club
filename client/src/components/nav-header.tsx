@@ -11,14 +11,56 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { 
   Search, Bell, Menu, Home, Layers, 
-  MessageSquare, Activity, Briefcase, LogOut 
+  MessageSquare, Activity, Briefcase, LogOut, 
+  Loader2 
 } from "lucide-react";
 
 export default function NavHeader() {
-  const { user, logoutMutation } = useAuth();
+  const { user, logoutMutation, isLoading } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
-  if (!user) return null;
+  if (isLoading) {
+    return (
+      <header className="bg-gray-900 border-b border-gray-800 px-4 py-3">
+        <div className="container mx-auto flex justify-between items-center">
+          <div className="flex items-center">
+            <div className="flex items-center mr-8">
+              <Button variant="ghost" className="p-0 mr-2 text-primary" asChild>
+                <a href="#" className="flex items-center">
+                  <svg className="h-8 w-8" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                  </svg>
+                  <span className="ml-2 text-lg font-bold text-white">ProjectHub</span>
+                </a>
+              </Button>
+            </div>
+          </div>
+          <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+        </div>
+      </header>
+    );
+  }
+
+  if (!user) {
+    return (
+      <header className="bg-gray-900 border-b border-gray-800 px-4 py-3">
+        <div className="container mx-auto flex justify-between items-center">
+          <div className="flex items-center">
+            <div className="flex items-center mr-8">
+              <Button variant="ghost" className="p-0 mr-2 text-primary" asChild>
+                <a href="#" className="flex items-center">
+                  <svg className="h-8 w-8" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                  </svg>
+                  <span className="ml-2 text-lg font-bold text-white">ProjectHub</span>
+                </a>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </header>
+    );
+  }
 
   const handleLogout = () => {
     logoutMutation.mutate();
