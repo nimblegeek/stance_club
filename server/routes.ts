@@ -1,14 +1,359 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
+import { storage } from "./storage";
+import { 
+  insertClassSchema, 
+  insertClassSessionSchema, 
+  insertAttendanceSchema,
+  insertStudentProgressSchema,
+  insertTechniqueSchema
+} from "@shared/schema";
+import { z } from "zod";
+
+// Middleware to check if user is authenticated
+const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  return res.status(401).json({ error: "Unauthorized" });
+};
+
+// Middleware to check if user is an instructor or admin
+const isInstructor = (req: Request, res: Response, next: NextFunction) => {
+  if (req.isAuthenticated() && req.user && (req.user.role === "instructor" || req.user.role === "admin")) {
+    return next();
+  }
+  return res.status(403).json({ error: "Forbidden. Instructor access required." });
+};
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // sets up /api/register, /api/login, /api/logout, /api/user
+  // Sets up /api/register, /api/login, /api/logout, /api/user
   setupAuth(app);
 
-  // Additional routes can be added here
-  // prefix all routes with /api
+  // ===== BJJ Classes API =====
+  app.get("/api/classes", isAuthenticated, async (req, res) => {
+    try {
+      const classes = await storage.getAllClasses();
+      res.json(classes);
+    } catch (error) {
+      console.error("Error fetching classes:", error);
+      res.status(500).json({ error: "Failed to fetch classes" });
+    }
+  });
 
+  app.get("/api/classes/:id", isAuthenticated, async (req, res) => {
+    try {
+      const classId = parseInt(req.params.id);
+      const bjjClass = await storage.getClass(classId);
+      
+      if (!bjjClass) {
+        return res.status(404).json({ error: "Class not found" });
+      }
+      
+      res.json(bjjClass);
+    } catch (error) {
+      console.error("Error fetching class:", error);
+      res.status(500).json({ error: "Failed to fetch class" });
+    }
+  });
+
+  app.post("/api/classes", isInstructor, async (req, res) => {
+    try {
+      const validatedData = insertClassSchema.parse(req.body);
+      const newClass = await storage.createClass(validatedData);
+      res.status(201).json(newClass);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors });
+      }
+      console.error("Error creating class:", error);
+      res.status(500).json({ error: "Failed to create class" });
+    }
+  });
+
+  app.put("/api/classes/:id", isInstructor, async (req, res) => {
+    try {
+      const classId = parseInt(req.params.id);
+      const validatedData = insertClassSchema.partial().parse(req.body);
+      
+      const updatedClass = await storage.updateClass(classId, validatedData);
+      if (!updatedClass) {
+        return res.status(404).json({ error: "Class not found" });
+      }
+      
+      res.json(updatedClass);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors });
+      }
+      console.error("Error updating class:", error);
+      res.status(500).json({ error: "Failed to update class" });
+    }
+  });
+
+  app.delete("/api/classes/:id", isInstructor, async (req, res) => {
+    try {
+      const classId = parseInt(req.params.id);
+      await storage.deleteClass(classId);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting class:", error);
+      res.status(500).json({ error: "Failed to delete class" });
+    }
+  });
+
+  // ===== Class Sessions API =====
+  app.get("/api/classes/:classId/sessions", isAuthenticated, async (req, res) => {
+    try {
+      const classId = parseInt(req.params.classId);
+      const sessions = await storage.getSessionsByClass(classId);
+      res.json(sessions);
+    } catch (error) {
+      console.error("Error fetching class sessions:", error);
+      res.status(500).json({ error: "Failed to fetch class sessions" });
+    }
+  });
+
+  app.post("/api/sessions", isInstructor, async (req, res) => {
+    try {
+      const validatedData = insertClassSessionSchema.parse(req.body);
+      const newSession = await storage.createClassSession(validatedData);
+      res.status(201).json(newSession);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors });
+      }
+      console.error("Error creating class session:", error);
+      res.status(500).json({ error: "Failed to create class session" });
+    }
+  });
+
+  app.put("/api/sessions/:id", isInstructor, async (req, res) => {
+    try {
+      const sessionId = parseInt(req.params.id);
+      const validatedData = insertClassSessionSchema.partial().parse(req.body);
+      
+      const updatedSession = await storage.updateClassSession(sessionId, validatedData);
+      if (!updatedSession) {
+        return res.status(404).json({ error: "Session not found" });
+      }
+      
+      res.json(updatedSession);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors });
+      }
+      console.error("Error updating session:", error);
+      res.status(500).json({ error: "Failed to update session" });
+    }
+  });
+
+  app.delete("/api/sessions/:id", isInstructor, async (req, res) => {
+    try {
+      const sessionId = parseInt(req.params.id);
+      await storage.deleteClassSession(sessionId);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting session:", error);
+      res.status(500).json({ error: "Failed to delete session" });
+    }
+  });
+
+  // ===== Attendance API =====
+  app.get("/api/sessions/:sessionId/attendance", isInstructor, async (req, res) => {
+    try {
+      const sessionId = parseInt(req.params.sessionId);
+      const attendanceRecords = await storage.getAttendanceBySession(sessionId);
+      res.json(attendanceRecords);
+    } catch (error) {
+      console.error("Error fetching attendance:", error);
+      res.status(500).json({ error: "Failed to fetch attendance records" });
+    }
+  });
+
+  app.post("/api/attendance", isInstructor, async (req, res) => {
+    try {
+      const validatedData = insertAttendanceSchema.parse(req.body);
+      const newAttendance = await storage.createAttendance(validatedData);
+      res.status(201).json(newAttendance);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors });
+      }
+      console.error("Error creating attendance record:", error);
+      res.status(500).json({ error: "Failed to create attendance record" });
+    }
+  });
+
+  app.put("/api/attendance/:id", isInstructor, async (req, res) => {
+    try {
+      const attendanceId = parseInt(req.params.id);
+      const validatedData = insertAttendanceSchema.partial().parse(req.body);
+      
+      const updatedAttendance = await storage.updateAttendance(attendanceId, validatedData);
+      if (!updatedAttendance) {
+        return res.status(404).json({ error: "Attendance record not found" });
+      }
+      
+      res.json(updatedAttendance);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors });
+      }
+      console.error("Error updating attendance record:", error);
+      res.status(500).json({ error: "Failed to update attendance record" });
+    }
+  });
+
+  // ===== Student Progress API =====
+  app.get("/api/students/:studentId/progress", isAuthenticated, async (req, res) => {
+    try {
+      const studentId = parseInt(req.params.studentId);
+      
+      // Only instructors or the student themselves can view progress
+      if (req.user?.id !== studentId && req.user?.role !== "instructor" && req.user?.role !== "admin") {
+        return res.status(403).json({ error: "Forbidden" });
+      }
+      
+      const progress = await storage.getProgressByStudent(studentId);
+      if (!progress) {
+        return res.status(404).json({ error: "No progress record found for this student" });
+      }
+      
+      res.json(progress);
+    } catch (error) {
+      console.error("Error fetching student progress:", error);
+      res.status(500).json({ error: "Failed to fetch student progress" });
+    }
+  });
+
+  app.post("/api/progress", isInstructor, async (req, res) => {
+    try {
+      const validatedData = insertStudentProgressSchema.parse(req.body);
+      
+      // Check if progress already exists for this student
+      const existingProgress = await storage.getProgressByStudent(validatedData.studentId);
+      if (existingProgress) {
+        return res.status(400).json({ error: "Student already has a progress record. Use PUT to update." });
+      }
+      
+      const newProgress = await storage.createStudentProgress(validatedData);
+      res.status(201).json(newProgress);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors });
+      }
+      console.error("Error creating student progress:", error);
+      res.status(500).json({ error: "Failed to create student progress" });
+    }
+  });
+
+  app.put("/api/progress/:id", isInstructor, async (req, res) => {
+    try {
+      const progressId = parseInt(req.params.id);
+      const validatedData = insertStudentProgressSchema.partial().parse(req.body);
+      
+      // Add updated timestamp
+      const dataWithTimestamp = {
+        ...validatedData,
+        updatedAt: new Date()
+      };
+      
+      const updatedProgress = await storage.updateStudentProgress(progressId, dataWithTimestamp);
+      if (!updatedProgress) {
+        return res.status(404).json({ error: "Progress record not found" });
+      }
+      
+      res.json(updatedProgress);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors });
+      }
+      console.error("Error updating student progress:", error);
+      res.status(500).json({ error: "Failed to update student progress" });
+    }
+  });
+
+  // ===== Techniques API =====
+  app.get("/api/techniques", isAuthenticated, async (req, res) => {
+    try {
+      const techniques = await storage.getAllTechniques();
+      res.json(techniques);
+    } catch (error) {
+      console.error("Error fetching techniques:", error);
+      res.status(500).json({ error: "Failed to fetch techniques" });
+    }
+  });
+
+  app.get("/api/techniques/category/:category", isAuthenticated, async (req, res) => {
+    try {
+      const category = req.params.category;
+      const techniques = await storage.getTechniquesByCategory(category);
+      res.json(techniques);
+    } catch (error) {
+      console.error("Error fetching techniques by category:", error);
+      res.status(500).json({ error: "Failed to fetch techniques by category" });
+    }
+  });
+
+  app.get("/api/techniques/belt/:beltLevel", isAuthenticated, async (req, res) => {
+    try {
+      const beltLevel = req.params.beltLevel;
+      const techniques = await storage.getTechniquesByBeltLevel(beltLevel);
+      res.json(techniques);
+    } catch (error) {
+      console.error("Error fetching techniques by belt level:", error);
+      res.status(500).json({ error: "Failed to fetch techniques by belt level" });
+    }
+  });
+
+  app.post("/api/techniques", isInstructor, async (req, res) => {
+    try {
+      const validatedData = insertTechniqueSchema.parse(req.body);
+      const newTechnique = await storage.createTechnique(validatedData);
+      res.status(201).json(newTechnique);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors });
+      }
+      console.error("Error creating technique:", error);
+      res.status(500).json({ error: "Failed to create technique" });
+    }
+  });
+
+  app.put("/api/techniques/:id", isInstructor, async (req, res) => {
+    try {
+      const techniqueId = parseInt(req.params.id);
+      const validatedData = insertTechniqueSchema.partial().parse(req.body);
+      
+      const updatedTechnique = await storage.updateTechnique(techniqueId, validatedData);
+      if (!updatedTechnique) {
+        return res.status(404).json({ error: "Technique not found" });
+      }
+      
+      res.json(updatedTechnique);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors });
+      }
+      console.error("Error updating technique:", error);
+      res.status(500).json({ error: "Failed to update technique" });
+    }
+  });
+
+  app.delete("/api/techniques/:id", isInstructor, async (req, res) => {
+    try {
+      const techniqueId = parseInt(req.params.id);
+      await storage.deleteTechnique(techniqueId);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting technique:", error);
+      res.status(500).json({ error: "Failed to delete technique" });
+    }
+  });
+
+  // Create HTTP server
   const httpServer = createServer(app);
 
   return httpServer;
