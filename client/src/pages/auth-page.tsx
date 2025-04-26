@@ -79,13 +79,21 @@ export default function AuthPage() {
     loginMutation.mutate({
       username: values.username,
       password: values.password,
+    }, {
+      onSuccess: () => {
+        navigate('/');
+      }
     });
   }
 
   // Handle registration form submission
   function onRegisterSubmit(values: z.infer<typeof registerSchema>) {
     const { confirmPassword, ...userData } = values;
-    registerMutation.mutate(userData);
+    registerMutation.mutate(userData, {
+      onSuccess: () => {
+        navigate('/');
+      }
+    });
   }
 
   return (
