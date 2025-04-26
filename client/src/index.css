@@ -14,8 +14,8 @@
   --card-foreground: 20 14.3% 4.1%;
   --border: 20 5.9% 90%;
   --input: 20 5.9% 90%;
-  --primary: 207 90% 54%;
-  --primary-foreground: 211 100% 99%;
+  --primary: 220 75% 60%;
+  --primary-foreground: 210 40% 98%;
   --secondary: 60 4.8% 95.9%;
   --secondary-foreground: 24 9.8% 10%;
   --accent: 60 4.8% 95.9%;
@@ -28,50 +28,50 @@
 
 /* Force dark mode by default */
 :root {
-  /* Dark theme values */
-  --background: 240 10% 3.9%;
-  --foreground: 0 0% 98%;
-  --muted: 240 3.7% 15.9%;
-  --muted-foreground: 240 5% 64.9%;
-  --popover: 240 10% 3.9%;
-  --popover-foreground: 0 0% 98%;
-  --card: 240 10% 3.9%;
-  --card-foreground: 0 0% 98%;
-  --border: 240 3.7% 15.9%;
-  --input: 240 3.7% 15.9%;
-  --primary: 207 90% 54%;
-  --primary-foreground: 211 100% 99%;
-  --secondary: 240 3.7% 15.9%;
-  --secondary-foreground: 0 0% 98%;
-  --accent: 240 3.7% 15.9%;
-  --accent-foreground: 0 0% 98%;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 0 0% 98%;
-  --ring: 240 4.9% 83.9%;
+  /* Softer Dark theme values - BJJ themed */
+  --background: 224 25% 10%;
+  --foreground: 210 20% 98%;
+  --muted: 223 20% 16%;
+  --muted-foreground: 215 16% 70%;
+  --popover: 224 25% 10%;
+  --popover-foreground: 210 20% 98%;
+  --card: 224 25% 12%;
+  --card-foreground: 210 20% 98%;
+  --border: 223 20% 20%;
+  --input: 223 20% 18%;
+  --primary: 220 75% 60%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 223 20% 18%;
+  --secondary-foreground: 210 20% 98%;
+  --accent: 223 20% 18%;
+  --accent-foreground: 210 20% 98%;
+  --destructive: 0 70% 40%;
+  --destructive-foreground: 210 20% 98%;
+  --ring: 224 20% 50%;
   --radius: 0.5rem;
 }
 
 .dark {
-  /* Dark theme values (same as root) */
-  --background: 240 10% 3.9%;
-  --foreground: 0 0% 98%;
-  --muted: 240 3.7% 15.9%;
-  --muted-foreground: 240 5% 64.9%;
-  --popover: 240 10% 3.9%;
-  --popover-foreground: 0 0% 98%;
-  --card: 240 10% 3.9%;
-  --card-foreground: 0 0% 98%;
-  --border: 240 3.7% 15.9%;
-  --input: 240 3.7% 15.9%;
-  --primary: 207 90% 54%;
-  --primary-foreground: 211 100% 99%;
-  --secondary: 240 3.7% 15.9%;
-  --secondary-foreground: 0 0% 98%;
-  --accent: 240 3.7% 15.9%;
-  --accent-foreground: 0 0% 98%;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 0 0% 98%;
-  --ring: 240 4.9% 83.9%;
+  /* Softer Dark theme values - BJJ themed (same as root) */
+  --background: 224 25% 10%;
+  --foreground: 210 20% 98%;
+  --muted: 223 20% 16%;
+  --muted-foreground: 215 16% 70%;
+  --popover: 224 25% 10%;
+  --popover-foreground: 210 20% 98%;
+  --card: 224 25% 12%;
+  --card-foreground: 210 20% 98%;
+  --border: 223 20% 20%;
+  --input: 223 20% 18%;
+  --primary: 220 75% 60%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 223 20% 18%;
+  --secondary-foreground: 210 20% 98%;
+  --accent: 223 20% 18%;
+  --accent-foreground: 210 20% 98%;
+  --destructive: 0 70% 40%;
+  --destructive-foreground: 210 20% 98%;
+  --ring: 224 20% 50%;
   --radius: 0.5rem;
 }
 

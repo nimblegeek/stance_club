@@ -6,7 +6,7 @@ export default function AssignmentsPanel() {
     <Card className="bg-card border-border">
       <CardContent className="p-4">
         <div className="bg-accent text-accent-foreground py-1 px-3 text-sm font-medium rounded-md mb-4 inline-block">
-          YOUR ASSIGNMENTS
+          STUDENT PROGRESS
         </div>
         
         <div className="flex flex-col items-center justify-center text-center py-12">
@@ -14,7 +14,7 @@ export default function AssignmentsPanel() {
             <Check className="h-10 w-10 text-muted-foreground" />
           </div>
           <p className="text-muted-foreground max-w-xs">
-            You don't have any assignments right now. To-dos and cards assigned to you will show up here.
+            No student evaluations pending. Track techniques, promotions, and attendance for your students here.
           </p>
         </div>
       </CardContent>

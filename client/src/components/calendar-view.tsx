@@ -54,7 +54,7 @@ export default function CalendarView() {
     <Card className="bg-card border-border">
       <CardContent className="p-4">
         <div className="bg-accent text-accent-foreground py-1 px-3 text-sm font-medium rounded-md mb-4 inline-block">
-          YOUR SCHEDULE
+          DOJO SCHEDULE
         </div>
         
         {/* Calendar Header */}
@@ -109,7 +109,7 @@ export default function CalendarView() {
             <CalendarIcon className="h-4 w-4 text-primary mr-2" />
             {format(selectedDate, "EEE, MMM d").toUpperCase()}
           </span>
-          <span className="ml-3">Nothing's on the schedule</span>
+          <span className="ml-3">No classes scheduled for this day</span>
         </div>
       </CardContent>
     </Card>

@@ -10,8 +10,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { 
-  Search, Bell, Menu, Home, Layers, 
-  MessageSquare, Activity, Briefcase, LogOut, 
+  Search, Bell, Menu, Home, Calendar, 
+  Users, BookOpen, BarChart, Award, LogOut, 
   Loader2 
 } from "lucide-react";
 

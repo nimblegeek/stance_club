@@ -6,21 +6,35 @@ import ProjectCard from "@/components/project-card";
 import CalendarView from "@/components/calendar-view";
 import AssignmentsPanel from "@/components/assignments-panel";
 
-// Sample project data
-const sampleProjects = [
+// BJJ classes and events data
+const bjjClasses = [
   {
-    id: "sample-1",
-    isSample: true,
-    title: "Getting Started",
-    description: "Quickly get up to speed with everything Basecamp",
-    members: ["JD"]
+    id: "class-1",
+    isSample: false,
+    title: "Fundamentals Class",
+    description: "The foundation of Brazilian Jiu-Jitsu. Perfect for beginners learning the basics and for experienced practitioners to refine their technique.",
+    members: ["Coach", "Assistant1"]
   },
   {
-    id: "sample-2",
-    isSample: true,
-    title: "Making a Podcast",
-    description: "👋 This is a sample project to showcase how we use ProjectHub to make a podcast called REWORK. Take a look...",
-    members: ["User1", "User2", "User3", "User4", "User5", "User6", "User7", "User8"]
+    id: "class-2",
+    isSample: false,
+    title: "Advanced Techniques",
+    description: "For intermediate to advanced students focusing on competition-oriented techniques and strategies.",
+    members: ["Coach", "Assistant1", "Assistant2"]
+  },
+  {
+    id: "event-1",
+    isSample: false,
+    title: "Weekend Competition Prep",
+    description: "🥋 Special training sessions to prepare for upcoming tournaments. Focused on competition scenarios and strategies.",
+    members: ["Coach", "Assistant1", "Assistant2", "CompTeam1", "CompTeam2", "CompTeam3", "CompTeam4", "CompTeam5"]
+  },
+  {
+    id: "event-2",
+    isSample: false,
+    title: "Monthly Belt Promotion",
+    description: "End of month promotion ceremony for qualifying students.",
+    members: ["Coach", "Assistant1", "Assistant2"]
   }
 ];
 
@@ -57,47 +71,50 @@ export default function Dashboard() {
           {/* Account Info & Actions */}
           <AccountHeader username={user.username} />
 
-          {/* Projects Section */}
+          {/* Classes Section */}
           <div className="mb-10">
-            {/* Main Project */}
-            <div className="mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <ProjectCard 
-                title="My Project" 
-                description="" 
-                members={[user.username]}
-              />
+            {/* Next Class */}
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold mb-4 text-card-foreground">Next Scheduled Class</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <ProjectCard 
+                  title="No-Gi Advanced Class" 
+                  description="Today at 7:00 PM - Focus on leg locks and submission transitions"
+                  members={[user.username, "Assistant1"]}
+                />
+              </div>
             </div>
 
-            {/* Sample Projects Heading */}
+            {/* Classes and Events Heading */}
             <div className="relative my-8">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-700"></div>
+                <div className="w-full border-t border-border"></div>
               </div>
               <div className="relative flex justify-center">
-                <span className="bg-background px-3 text-sm font-medium text-muted-foreground">SAMPLE PROJECTS</span>
+                <span className="bg-background px-3 text-sm font-medium text-muted-foreground">CLASSES & EVENTS</span>
               </div>
             </div>
 
-            {/* Sample Projects Grid */}
+            {/* Classes Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {sampleProjects.map((project) => (
+              {bjjClasses.map((bjjClass) => (
                 <ProjectCard 
-                  key={project.id}
-                  title={project.title} 
-                  description={project.description} 
-                  members={project.members}
-                  isSample={project.isSample}
+                  key={bjjClass.id}
+                  title={bjjClass.title} 
+                  description={bjjClass.description} 
+                  members={bjjClass.members}
+                  isSample={bjjClass.isSample}
                 />
               ))}
             </div>
           </div>
 
-          {/* Schedule and Assignments Section */}
+          {/* Schedule and Student Progress Section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Calendar Schedule */}
             <CalendarView />
             
-            {/* Assignments Panel */}
+            {/* Student Progress Panel */}
             <AssignmentsPanel />
           </div>
         </div>
