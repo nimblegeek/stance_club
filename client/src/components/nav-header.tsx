@@ -1,0 +1,125 @@
+import { useState } from "react";
+import { useAuth } from "@/hooks/use-auth";
+import UserAvatar from "./user-avatar";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { 
+  Search, Bell, Menu, Home, Layers, 
+  MessageSquare, Activity, Briefcase, LogOut 
+} from "lucide-react";
+
+export default function NavHeader() {
+  const { user, logoutMutation } = useAuth();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
+  if (!user) return null;
+
+  const handleLogout = () => {
+    logoutMutation.mutate();
+  };
+  
+  const navItems = [
+    { name: "Home", icon: <Home className="h-4 w-4 mr-2" />, active: true },
+    { name: "Projects", icon: <Layers className="h-4 w-4 mr-2" /> },
+    { name: "Messages", icon: <MessageSquare className="h-4 w-4 mr-2" /> },
+    { name: "Activity", icon: <Activity className="h-4 w-4 mr-2" /> },
+    { name: "My Stuff", icon: <Briefcase className="h-4 w-4 mr-2" /> },
+  ];
+  
+  return (
+    <header className="bg-gray-900 border-b border-gray-800 px-4 py-3">
+      <div className="container mx-auto flex justify-between items-center">
+        <div className="flex items-center">
+          <div className="flex items-center mr-8">
+            <Button variant="ghost" className="p-0 mr-2 text-primary" asChild>
+              <a href="#" className="flex items-center">
+                <svg className="h-8 w-8" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                </svg>
+                <span className="ml-2 text-lg font-bold text-white">ProjectHub</span>
+              </a>
+            </Button>
+          </div>
+          
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-6">
+            {navItems.map((item) => (
+              <Button 
+                key={item.name}
+                variant="ghost" 
+                className={`text-sm ${item.active ? 'text-white' : 'text-gray-400'} hover:text-white`}
+              >
+                {item.name}
+              </Button>
+            ))}
+          </nav>
+          
+          {/* Mobile Menu Button */}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="md:hidden" 
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
+        </div>
+        
+        <div className="flex items-center space-x-3">
+          <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white">
+            <Search className="h-5 w-5" />
+          </Button>
+          <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white">
+            <Bell className="h-5 w-5" />
+          </Button>
+          
+          {/* User Profile Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="p-0 hover:bg-transparent">
+                <UserAvatar username={user.username} />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <div className="px-2 py-1.5">
+                <p className="text-sm font-medium">{user.username}</p>
+              </div>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Profile</DropdownMenuItem>
+              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout} className="text-red-500">
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Log out</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+      
+      {/* Mobile Navigation Menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden py-2 px-4 mt-2 bg-gray-800 rounded-md">
+          <nav className="flex flex-col space-y-2">
+            {navItems.map((item) => (
+              <Button 
+                key={item.name}
+                variant="ghost" 
+                className={`justify-start ${item.active ? 'text-white' : 'text-gray-400'} hover:text-white`}
+              >
+                {item.icon}
+                {item.name}
+              </Button>
+            ))}
+          </nav>
+        </div>
+      )}
+    </header>
+  );
+}
