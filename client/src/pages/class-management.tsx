@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import NavHeader from "@/components/nav-header";
+import ClassScheduler from "@/components/class-scheduler";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -412,9 +413,7 @@ export default function ClassManagement() {
             </TabsContent>
             
             <TabsContent value="schedule">
-              <p className="text-center mb-4">
-                The scheduling feature will be available in the next tab. You can create class templates first.
-              </p>
+              <ClassScheduler />
             </TabsContent>
           </Tabs>
         </div>
