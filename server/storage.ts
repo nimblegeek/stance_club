@@ -21,7 +21,7 @@ import {
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import { db, pool } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, and, gte, lte } from "drizzle-orm";
 
 // Comprehensive interface with CRUD methods for all entities
 export interface IStorage {
@@ -42,6 +42,8 @@ export interface IStorage {
   // Class sessions
   getClassSession(id: number): Promise<ClassSession | undefined>;
   getSessionsByClass(classId: number): Promise<ClassSession[]>;
+  getAllSessions(): Promise<ClassSession[]>;
+  getSessionsByDateRange(startDate: string, endDate: string): Promise<ClassSession[]>;
   createClassSession(sessionData: InsertClassSession): Promise<ClassSession>;
   updateClassSession(id: number, sessionData: Partial<InsertClassSession>): Promise<ClassSession | undefined>;
   deleteClassSession(id: number): Promise<boolean>;
@@ -162,6 +164,23 @@ export class DatabaseStorage implements IStorage {
 
   async getSessionsByClass(classId: number): Promise<ClassSession[]> {
     return await db.select().from(classSessions).where(eq(classSessions.classId, classId));
+  }
+  
+  async getAllSessions(): Promise<ClassSession[]> {
+    return await db.select().from(classSessions);
+  }
+  
+  async getSessionsByDateRange(startDate: string, endDate: string): Promise<ClassSession[]> {
+    return await db
+      .select()
+      .from(classSessions)
+      .where(
+        and(
+          gte(classSessions.date, startDate),
+          lte(classSessions.date, endDate)
+        )
+      )
+      .orderBy(classSessions.date, classSessions.startTime);
   }
 
   async createClassSession(sessionData: InsertClassSession): Promise<ClassSession> {

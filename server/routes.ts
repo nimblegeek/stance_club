@@ -114,6 +114,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: "Failed to fetch class sessions" });
     }
   });
+  
+  // Get all sessions (for calendar view)
+  app.get("/api/sessions", isAuthenticated, async (req, res) => {
+    try {
+      // Get date range filters from query parameters
+      const startDate = req.query.startDate as string;
+      const endDate = req.query.endDate as string;
+      
+      // Fetch all sessions or filtered by date range if provided
+      let sessions;
+      if (startDate && endDate) {
+        sessions = await storage.getSessionsByDateRange(startDate, endDate);
+      } else {
+        // Combine all sessions with their class details for easier rendering
+        const allClasses = await storage.getAllClasses();
+        const allSessions = await storage.getAllSessions();
+        
+        // Enrich sessions with class details
+        sessions = allSessions.map(session => {
+          const classDetails = allClasses.find(c => c.id === session.classId);
+          return {
+            ...session,
+            classTitle: classDetails?.title || "Unknown Class",
+            classType: classDetails?.type || "Unknown Type",
+            classLevel: classDetails?.level || "Unknown Level"
+          };
+        });
+      }
+      
+      res.json(sessions);
+    } catch (error) {
+      console.error("Error fetching sessions:", error);
+      res.status(500).json({ error: "Failed to fetch sessions" });
+    }
+  });
 
   app.post("/api/sessions", isInstructor, async (req, res) => {
     try {
