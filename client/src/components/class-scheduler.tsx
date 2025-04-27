@@ -118,28 +118,86 @@ export default function ClassScheduler() {
   
   // Handle adding/editing a session
   const saveMutation = useMutation({
-    mutationFn: async (data: z.infer<typeof sessionSchema>) => {
-      let url = "/api/sessions";
-      let method = "POST";
-      
-      if (editSession) {
-        url = `/api/sessions/${editSession.id}`;
-        method = "PUT";
-      }
+    mutationFn: async (data: z.infer<typeof recurringSessionSchema>) => {
+      // For single sessions or when editing existing session
+      if (!data.isRecurring || editSession) {
+        let url = "/api/sessions";
+        let method = "POST";
+        
+        if (editSession) {
+          url = `/api/sessions/${editSession.id}`;
+          method = "PUT";
+        }
 
-      const res = await apiRequest(method, url, data);
-      return await res.json();
+        // Remove recurring fields for regular session
+        const { isRecurring, daysOfWeek, recurrenceEndDate, ...sessionData } = data;
+        const res = await apiRequest(method, url, sessionData);
+        return { 
+          success: true, 
+          data: await res.json(),
+          isRecurring: false 
+        };
+      } 
+      // For recurring sessions
+      else {
+        // Get day of week from the selected date (0-6, where 0 is Sunday)
+        const selectedDay = new Date(data.date).getDay();
+        const daysToCreate = data.daysOfWeek || [selectedDay];
+        
+        // Calculate recurring dates between start and end date
+        const startDate = new Date(data.date);
+        const endDate = new Date(data.recurrenceEndDate || '');
+        
+        // Create multiple sessions
+        const sessionPromises = [];
+        let currentDate = new Date(startDate);
+        
+        // Remove recurring fields for each individual session
+        const { isRecurring, daysOfWeek, recurrenceEndDate, ...sessionData } = data;
+        
+        // Loop until we reach the end date
+        while (currentDate <= endDate) {
+          // Check if current day of week is in the selected days
+          const currentDayOfWeek = currentDate.getDay();
+          if (daysToCreate.includes(currentDayOfWeek)) {
+            // Create a new session for this date
+            const sessionForDate = {
+              ...sessionData,
+              date: format(currentDate, "yyyy-MM-dd")
+            };
+            
+            sessionPromises.push(
+              apiRequest("POST", "/api/sessions", sessionForDate)
+                .then(res => res.json())
+            );
+          }
+          
+          // Move to next day
+          currentDate = addDays(currentDate, 1);
+        }
+        
+        // Wait for all sessions to be created
+        await Promise.all(sessionPromises);
+        
+        return { 
+          success: true, 
+          isRecurring: true,
+          count: sessionPromises.length
+        };
+      }
     },
-    onSuccess: () => {
+    onSuccess: (result: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/sessions"] });
       setIsSessionDialogOpen(false);
       setEditSession(null);
       
       toast({
-        title: editSession ? "Session updated" : "Session created",
+        title: editSession ? "Session updated" : result.isRecurring ? "Recurring classes created" : "Session created",
         description: editSession
           ? "The class session has been updated successfully."
-          : "New class session has been added to the schedule.",
+          : result.isRecurring
+            ? `Created ${result.count} recurring classes on your schedule.`
+            : "New class session has been added to the schedule.",
       });
       
       sessionForm.reset({
@@ -148,6 +206,12 @@ export default function ClassScheduler() {
         startTime: "18:00",
         endTime: "19:30",
         notes: "",
+        isRecurring: false,
+        daysOfWeek: [new Date().getDay()],
+        recurrenceEndDate: format(
+          addDays(addMonths(date, 1), 0),
+          "yyyy-MM-dd"
+        ),
       });
     },
     onError: (error) => {
@@ -181,7 +245,7 @@ export default function ClassScheduler() {
   });
   
   // Handle form submission
-  const onSubmit = (data: z.infer<typeof sessionSchema>) => {
+  const onSubmit = (data: z.infer<typeof recurringSessionSchema>) => {
     saveMutation.mutate(data);
   };
   
@@ -194,6 +258,12 @@ export default function ClassScheduler() {
       startTime: session.startTime,
       endTime: session.endTime,
       notes: session.notes || "",
+      isRecurring: false, // No recurring edits for existing sessions
+      daysOfWeek: [new Date(session.date).getDay()],
+      recurrenceEndDate: format(
+        addDays(addMonths(new Date(session.date), 1), 0),
+        "yyyy-MM-dd"
+      ),
     });
     setIsSessionDialogOpen(true);
   };
@@ -215,6 +285,12 @@ export default function ClassScheduler() {
         startTime: "18:00",
         endTime: "19:30",
         notes: "",
+        isRecurring: false,
+        daysOfWeek: [new Date().getDay()],
+        recurrenceEndDate: format(
+          addDays(addMonths(date, 1), 0),
+          "yyyy-MM-dd"
+        ),
       });
     }
     setIsSessionDialogOpen(open);
