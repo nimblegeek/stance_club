@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -26,7 +27,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2, Plus, Edit, Trash2, Calendar as CalendarIcon, Clock } from "lucide-react";
-import { format, parse, isToday, isSameDay } from "date-fns";
+import { format, parse, isToday, isSameDay, addMonths, addDays } from "date-fns";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -41,6 +42,13 @@ const sessionSchema = z.object({
   startTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Please enter time in format HH:MM"),
   endTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Please enter time in format HH:MM"),
   notes: z.string().optional(),
+});
+
+// Recurring session schema
+const recurringSessionSchema = sessionSchema.extend({
+  isRecurring: z.boolean().default(false),
+  daysOfWeek: z.array(z.number().min(0).max(6)).optional(), // 0-6 for Sunday-Saturday
+  recurrenceEndDate: z.string().optional(),
 });
 
 type Class = {
@@ -86,14 +94,20 @@ export default function ClassScheduler() {
   ) || [];
   
   // Form setup
-  const sessionForm = useForm<z.infer<typeof sessionSchema>>({
-    resolver: zodResolver(sessionSchema),
+  const sessionForm = useForm<z.infer<typeof recurringSessionSchema>>({
+    resolver: zodResolver(recurringSessionSchema),
     defaultValues: {
       classId: 0,
       date: format(date, "yyyy-MM-dd"),
       startTime: "18:00",
       endTime: "19:30",
       notes: "",
+      isRecurring: false,
+      daysOfWeek: [new Date().getDay()], // Default to current day of week
+      recurrenceEndDate: format(
+        addDays(addMonths(date, 1), 0), // Default recurrence end date is one month out
+        "yyyy-MM-dd"
+      ),
     },
   });
   
@@ -406,6 +420,87 @@ export default function ClassScheduler() {
                           </FormItem>
                         )}
                       />
+                      
+                      {/* Recurring Schedule Options */}
+                      <FormField
+                        control={sessionForm.control}
+                        name="isRecurring"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                              <FormLabel>Recurring Schedule</FormLabel>
+                              <FormDescription>
+                                Create a recurring class that repeats weekly
+                              </FormDescription>
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+                      
+                      {/* If recurring is checked, show additional options */}
+                      {sessionForm.watch("isRecurring") && (
+                        <div className="space-y-4 rounded-md border p-4">
+                          <div>
+                            <FormLabel className="block mb-2">Weekly Schedule</FormLabel>
+                            <FormDescription className="mb-2">
+                              Select the days of the week this class repeats on
+                            </FormDescription>
+                            
+                            <div className="flex flex-wrap gap-2">
+                              {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day, index) => {
+                                const daysOfWeek = sessionForm.watch("daysOfWeek") || [];
+                                const isSelected = daysOfWeek.includes(index);
+                                
+                                return (
+                                  <Button 
+                                    key={day}
+                                    type="button"
+                                    size="sm"
+                                    variant={isSelected ? "default" : "outline"}
+                                    onClick={() => {
+                                      const currentDays = [...daysOfWeek];
+                                      if (isSelected) {
+                                        // Remove the day
+                                        const newDays = currentDays.filter(d => d !== index);
+                                        sessionForm.setValue("daysOfWeek", newDays);
+                                      } else {
+                                        // Add the day
+                                        currentDays.push(index);
+                                        sessionForm.setValue("daysOfWeek", currentDays);
+                                      }
+                                    }}
+                                  >
+                                    {day}
+                                  </Button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                          
+                          <FormField
+                            control={sessionForm.control}
+                            name="recurrenceEndDate"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>End Date</FormLabel>
+                                <FormControl>
+                                  <Input type="date" {...field} />
+                                </FormControl>
+                                <FormDescription>
+                                  The last date this recurring class will happen
+                                </FormDescription>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      )}
                       
                       <DialogFooter>
                         <Button 
