@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
+import { useLocation, Link } from "wouter";
 import UserAvatar from "./user-avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -66,12 +67,39 @@ export default function NavHeader() {
     logoutMutation.mutate();
   };
   
+  const [location] = useLocation();
+  
   const navItems = [
-    { name: "Dashboard", icon: <Home className="h-4 w-4 mr-2" />, active: true },
-    { name: "Classes", icon: <Calendar className="h-4 w-4 mr-2" /> },
-    { name: "Students", icon: <Users className="h-4 w-4 mr-2" /> },
-    { name: "Techniques", icon: <BookOpen className="h-4 w-4 mr-2" /> },
-    { name: "Promotions", icon: <Award className="h-4 w-4 mr-2" /> },
+    { 
+      name: "Dashboard", 
+      icon: <Home className="h-4 w-4 mr-2" />, 
+      path: "/",
+      active: location === "/"
+    },
+    { 
+      name: "Classes", 
+      icon: <Calendar className="h-4 w-4 mr-2" />,
+      path: "/classes",
+      active: location === "/classes"
+    },
+    { 
+      name: "Students", 
+      icon: <Users className="h-4 w-4 mr-2" />,
+      path: "/students",
+      active: location === "/students"
+    },
+    { 
+      name: "Techniques", 
+      icon: <BookOpen className="h-4 w-4 mr-2" />,
+      path: "/techniques",
+      active: location === "/techniques"
+    },
+    { 
+      name: "Promotions", 
+      icon: <Award className="h-4 w-4 mr-2" />,
+      path: "/promotions",
+      active: location === "/promotions"
+    },
   ];
   
   return (
@@ -80,12 +108,12 @@ export default function NavHeader() {
         <div className="flex items-center">
           <div className="flex items-center mr-8">
             <Button variant="ghost" className="p-0 mr-2 text-primary" asChild>
-              <a href="#" className="flex items-center">
+              <Link href="/" className="flex items-center">
                 <svg className="h-8 w-8" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
                 </svg>
                 <span className="ml-2 text-lg font-bold text-card-foreground">DojoMaster</span>
-              </a>
+              </Link>
             </Button>
           </div>
           
@@ -96,8 +124,11 @@ export default function NavHeader() {
                 key={item.name}
                 variant="ghost" 
                 className={`text-sm ${item.active ? 'text-card-foreground' : 'text-muted-foreground'} hover:text-card-foreground`}
+                asChild
               >
-                {item.name}
+                <Link href={item.path}>
+                  {item.name}
+                </Link>
               </Button>
             ))}
           </nav>
@@ -154,9 +185,12 @@ export default function NavHeader() {
                 key={item.name}
                 variant="ghost" 
                 className={`justify-start ${item.active ? 'text-card-foreground' : 'text-muted-foreground'} hover:text-card-foreground`}
+                asChild
               >
-                {item.icon}
-                {item.name}
+                <Link href={item.path}>
+                  {item.icon}
+                  {item.name}
+                </Link>
               </Button>
             ))}
           </nav>
