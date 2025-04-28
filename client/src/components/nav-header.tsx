@@ -32,7 +32,7 @@ export default function NavHeader() {
     return (
       <header className="bg-card border-b border-border px-4 py-3">
         <div className="container mx-auto flex justify-between items-center">
-          <div className="flex items-center">
+          <div className="flex items-center flex-1">
             <div className="flex items-center mr-8">
               <Button variant="ghost" className="p-0 mr-2 text-primary" asChild>
                 <a href="#" className="flex items-center">
@@ -43,7 +43,7 @@ export default function NavHeader() {
                   >
                     <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
                   </svg>
-                  <span className="ml-2 text-lg font-bold text-card-foreground">
+                  <span className="ml-3 text-xl font-bold text-card-foreground">
                     Stance
                   </span>
                 </a>
@@ -60,7 +60,7 @@ export default function NavHeader() {
     return (
       <header className="bg-card border-b border-border px-4 py-3">
         <div className="container mx-auto flex justify-between items-center">
-          <div className="flex items-center">
+          <div className="flex items-center flex-1">
             <div className="flex items-center mr-8">
               <Button variant="ghost" className="p-0 mr-2 text-primary" asChild>
                 <a href="#" className="flex items-center">
@@ -71,7 +71,7 @@ export default function NavHeader() {
                   >
                     <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
                   </svg>
-                  <span className="ml-2 text-lg font-bold text-card-foreground">
+                  <span className="ml-3 text-xl font-bold text-card-foreground">
                     Stance
                   </span>
                 </a>
@@ -125,7 +125,7 @@ export default function NavHeader() {
   return (
     <header className="bg-card border-b border-border px-4 py-3">
       <div className="container mx-auto flex justify-between items-center">
-        <div className="flex items-center">
+        <div className="flex items-center flex-1">
           <div className="flex items-center mr-8">
             <Button variant="ghost" className="p-0 mr-2 text-primary" asChild>
               <Link href="/" className="flex items-center">
@@ -156,8 +156,10 @@ export default function NavHeader() {
               </Button>
             ))}
           </nav>
+        </div>
 
-          {/* Mobile Menu Button */}
+        <div className="flex items-center space-x-3">
+          {/* Mobile Menu Button - Moved to the right */}
           <Button
             variant="ghost"
             size="icon"
@@ -165,23 +167,6 @@ export default function NavHeader() {
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             <Menu className="h-5 w-5" />
-          </Button>
-        </div>
-
-        <div className="flex items-center space-x-3">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-muted-foreground hover:text-card-foreground"
-          >
-            <Search className="h-5 w-5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-muted-foreground hover:text-card-foreground"
-          >
-            <Bell className="h-5 w-5" />
           </Button>
 
           {/* User Profile Dropdown */}
