@@ -39,9 +39,16 @@ export default function AdminButton() {
     }
   };
   
+  console.log("AdminButton rendering with user:", user);
+  
   // Only show this button if the user is not already an admin
   if (user?.role === "admin") {
-    return null;
+    console.log("User is already admin, not showing button");
+    return (
+      <div className="text-sm text-green-500 mt-4">
+        You already have admin privileges.
+      </div>
+    );
   }
   
   return (

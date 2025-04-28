@@ -89,6 +89,8 @@ export default function NavHeader() {
 
   const [location] = useLocation();
 
+  console.log("NavHeader rendering with user:", user);
+  
   // Base navigation items available to all users
   let navItems = [
     {
@@ -119,12 +121,15 @@ export default function NavHeader() {
   
   // Add Reports link only for admin users
   if (user?.role === "admin") {
+    console.log("User is admin, adding Reports to navigation");
     navItems.push({
       name: "Reports",
       icon: <BarChart className="h-4 w-4 mr-2" />,
       path: "/reports",
       active: location === "/reports",
     });
+  } else {
+    console.log("User is not admin, role:", user?.role);
   }
 
   return (

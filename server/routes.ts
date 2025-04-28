@@ -35,21 +35,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/become-admin", isAuthenticated, async (req, res) => {
     try {
       if (!req.user) {
+        console.log("No user found in request");
         return res.status(401).json({ error: "Not authenticated" });
       }
       
+      console.log("Current user before update:", req.user);
       const userId = req.user.id;
+      
+      console.log("Updating user with ID:", userId);
       const updatedUser = await storage.updateUser(userId, { role: "admin" });
       
       if (!updatedUser) {
+        console.log("User not found after update");
         return res.status(404).json({ error: "User not found" });
       }
+      
+      console.log("User updated successfully:", updatedUser);
       
       // Update the session user object
       req.login(updatedUser, (err) => {
         if (err) {
+          console.error("Failed to update session:", err);
           return res.status(500).json({ error: "Failed to update session" });
         }
+        console.log("User session updated, sending response");
         res.json(updatedUser);
       });
     } catch (error) {
