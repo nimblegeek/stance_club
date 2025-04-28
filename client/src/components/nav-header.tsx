@@ -98,7 +98,7 @@ export default function NavHeader() {
     },
     {
       name: "Classes",
-      icon: <Calendar className="h-4 w-4 mr-2" />,
+      icon: <BookOpen className="h-4 w-4 mr-2" />,
       path: "/classes",
       active: location === "/classes",
     },
@@ -109,10 +109,10 @@ export default function NavHeader() {
       active: location === "/members" || location.startsWith("/members/"),
     },
     {
-      name: "Techniques",
-      icon: <BookOpen className="h-4 w-4 mr-2" />,
-      path: "/techniques",
-      active: location === "/techniques",
+      name: "Events",
+      icon: <Calendar className="h-4 w-4 mr-2" />,
+      path: "/events",
+      active: location === "/events",
     },
     {
       name: "Promotions",
