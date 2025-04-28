@@ -9,6 +9,7 @@ import MembersPage from "@/pages/members-page";
 import EventsPage from "@/pages/events-page";
 import ReportsPage from "@/pages/reports-page";
 import CoachPortal from "@/pages/coach-portal";
+import AdminLand from "@/pages/admin-land";
 import { ProtectedRoute, AdminRoute, InstructorRoute } from "./lib/protected-route";
 import { AuthProvider } from "./hooks/use-auth";
 
@@ -21,6 +22,7 @@ function Router() {
       <ProtectedRoute path="/events" component={EventsPage} />
       <AdminRoute path="/reports" component={ReportsPage} />
       <InstructorRoute path="/coach-portal" component={CoachPortal} />
+      <AdminRoute path="/admin-land" component={AdminLand} />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>

@@ -7,7 +7,7 @@ import ProjectCard from "@/components/project-card";
 import CalendarView from "@/components/calendar-view";
 import AssignmentsPanel from "@/components/assignments-panel";
 import AdminButton from "@/components/admin-button";
-import AdminLand from "@/components/admin-land";
+import AdminLink from "@/components/admin-link";
 
 // BJJ classes and events data
 const bjjClasses = [
@@ -75,6 +75,7 @@ export default function Dashboard() {
             title="Dashboard"
             description="Welcome to DojoMaster"
             breadcrumbs={[{ label: "Dashboard" }]}
+            actions={<AdminLink />}
           />
           
           {/* Account Info & Actions */}
@@ -126,17 +127,13 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Schedule and Other Panels Section */}
+          {/* Schedule and Student Progress Section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Calendar Schedule */}
             <CalendarView />
             
-            {/* Admin Land or Student Progress Panel based on user role */}
-            {user.role === "admin" ? (
-              <AdminLand />
-            ) : (
-              <AssignmentsPanel />
-            )}
+            {/* Student Progress Panel */}
+            <AssignmentsPanel />
           </div>
         </div>
       </main>
