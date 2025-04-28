@@ -81,6 +81,8 @@ const progressNoteSchema = z.object({
 });
 
 // Main component
+import NavHeader from "@/components/nav-header";
+
 export default function MembersPage() {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -406,7 +408,11 @@ export default function MembersPage() {
   };
 
   return (
-    <div className="container mx-auto p-4 space-y-6">
+    <div className="min-h-screen flex flex-col bg-background">
+      <NavHeader />
+      
+      <main className="flex-1 overflow-auto py-6 px-4">
+        <div className="container mx-auto">
       <PageHeader
         title="Members"
         description="Manage club members and track their progress"
@@ -903,6 +909,8 @@ export default function MembersPage() {
           )}
         </TabsContent>
       </Tabs>
+        </div>
+      </main>
     </div>
   );
 }
