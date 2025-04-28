@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
-import NavHeader from "@/components/nav-header";
+import { PageHeader } from "@/components/page-header";
 import ClassScheduler from "@/components/class-scheduler";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -193,45 +193,84 @@ export default function ClassManagement() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      {/* Header */}
-      <NavHeader />
-
-      {/* Main Content */}
-      <main className="flex-1 overflow-auto py-6 px-4">
-        <div className="container mx-auto">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold">Class Management</h1>
-            
-            {/* Add Class Button */}
-            <Dialog open={isClassDialogOpen} onOpenChange={handleDialogOpen}>
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Class
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                  <DialogTitle>{editClass ? "Edit Class" : "Create New Class"}</DialogTitle>
-                  <DialogDescription>
-                    {editClass 
-                      ? "Update the class details. Click save when you're done."
-                      : "Fill in the details for the new class. Click save when you're done."}
-                  </DialogDescription>
-                </DialogHeader>
-                
-                <Form {...classForm}>
-                  <form onSubmit={classForm.handleSubmit(onSubmit)} className="space-y-4">
+    <div className="container mx-auto p-4 space-y-6">
+      <PageHeader
+        title="Class Management"
+        description="Create and manage your classes"
+        breadcrumbs={[{ label: "Classes" }]}
+        actions={
+          <Dialog open={isClassDialogOpen} onOpenChange={handleDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Class
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>{editClass ? "Edit Class" : "Create New Class"}</DialogTitle>
+                <DialogDescription>
+                  {editClass 
+                    ? "Update the class details. Click save when you're done."
+                    : "Fill in the details for the new class. Click save when you're done."}
+                </DialogDescription>
+              </DialogHeader>
+              
+              <Form {...classForm}>
+                <form onSubmit={classForm.handleSubmit(onSubmit)} className="space-y-4">
+                  <FormField
+                    control={classForm.control}
+                    name="title"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Title</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter class title" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={classForm.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Description</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            placeholder="Describe what this class covers" 
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <div className="grid grid-cols-2 gap-4">
                     <FormField
                       control={classForm.control}
-                      name="title"
+                      name="type"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Title</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter class title" {...field} />
-                          </FormControl>
+                          <FormLabel>Type</FormLabel>
+                          <Select 
+                            onValueChange={field.onChange} 
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select type" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="gi">Gi</SelectItem>
+                              <SelectItem value="no-gi">No-Gi</SelectItem>
+                              <SelectItem value="open-mat">Open Mat</SelectItem>
+                            </SelectContent>
+                          </Select>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -239,185 +278,140 @@ export default function ClassManagement() {
                     
                     <FormField
                       control={classForm.control}
-                      name="description"
+                      name="level"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Description</FormLabel>
-                          <FormControl>
-                            <Textarea 
-                              placeholder="Describe what this class covers" 
-                              {...field} 
-                            />
-                          </FormControl>
+                          <FormLabel>Level</FormLabel>
+                          <Select 
+                            onValueChange={field.onChange} 
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select level" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="beginner">Beginner</SelectItem>
+                              <SelectItem value="intermediate">Intermediate</SelectItem>
+                              <SelectItem value="advanced">Advanced</SelectItem>
+                              <SelectItem value="all-levels">All Levels</SelectItem>
+                            </SelectContent>
+                          </Select>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    
-                    <div className="grid grid-cols-2 gap-4">
-                      <FormField
-                        control={classForm.control}
-                        name="type"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Type</FormLabel>
-                            <Select 
-                              onValueChange={field.onChange} 
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select type" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="gi">Gi</SelectItem>
-                                <SelectItem value="no-gi">No-Gi</SelectItem>
-                                <SelectItem value="open-mat">Open Mat</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={classForm.control}
-                        name="level"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Level</FormLabel>
-                            <Select 
-                              onValueChange={field.onChange} 
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select level" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="beginner">Beginner</SelectItem>
-                                <SelectItem value="intermediate">Intermediate</SelectItem>
-                                <SelectItem value="advanced">Advanced</SelectItem>
-                                <SelectItem value="all-levels">All Levels</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    
-                    <FormField
-                      control={classForm.control}
-                      name="maxCapacity"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Max Capacity</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number" 
-                              min={1}
-                              {...field}
-                              onChange={(e) => field.onChange(Number(e.target.value))}
-                            />
-                          </FormControl>
-                          <FormDescription>
-                            Maximum number of students allowed in this class
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <DialogFooter>
-                      <Button 
-                        type="submit" 
-                        disabled={saveMutation.isPending}
-                      >
-                        {saveMutation.isPending ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Saving...
-                          </>
-                        ) : (
-                          <>Save</>
-                        )}
-                      </Button>
-                    </DialogFooter>
-                  </form>
-                </Form>
-              </DialogContent>
-            </Dialog>
-          </div>
-          
-          <Tabs defaultValue="classes" value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="classes">Class Templates</TabsTrigger>
-              <TabsTrigger value="schedule">Schedule</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="classes">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {classes && classes.length > 0 ? (
-                  classes.map((bjjClass) => (
-                    <Card key={bjjClass.id} className="flex flex-col">
-                      <CardHeader>
-                        <CardTitle>{bjjClass.title}</CardTitle>
-                        <CardDescription>
-                          {bjjClass.type.toUpperCase()} | {bjjClass.level.replace('-', ' ').toUpperCase()}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="flex-1">
-                        <p className="text-sm text-muted-foreground">
-                          {bjjClass.description || "No description available."}
-                        </p>
-                        
-                        <div className="mt-4 space-y-2">
-                          <div className="flex items-center">
-                            <Users className="h-4 w-4 mr-2 text-muted-foreground" />
-                            <span className="text-sm">Max Capacity: {bjjClass.maxCapacity || "Unlimited"}</span>
-                          </div>
-                        </div>
-                      </CardContent>
-                      <CardFooter className="border-t pt-4 gap-2">
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          className="flex-1"
-                          onClick={() => handleEdit(bjjClass)}
-                        >
-                          <Edit className="h-4 w-4 mr-1" />
-                          Edit
-                        </Button>
-                        <Button 
-                          variant="destructive" 
-                          size="sm" 
-                          className="flex-1"
-                          onClick={() => handleDelete(bjjClass.id)}
-                          disabled={deleteMutation.isPending}
-                        >
-                          <Trash2 className="h-4 w-4 mr-1" />
-                          Delete
-                        </Button>
-                      </CardFooter>
-                    </Card>
-                  ))
-                ) : (
-                  <div className="col-span-full text-center py-8">
-                    <p className="text-muted-foreground">No classes defined yet. Create your first class!</p>
                   </div>
-                )}
+                  
+                  <FormField
+                    control={classForm.control}
+                    name="maxCapacity"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Max Capacity</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="number" 
+                            min={1}
+                            {...field}
+                            onChange={(e) => field.onChange(Number(e.target.value))}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Maximum number of students allowed in this class
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <DialogFooter>
+                    <Button 
+                      type="submit" 
+                      disabled={saveMutation.isPending}
+                    >
+                      {saveMutation.isPending ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        <>Save</>
+                      )}
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
+        }
+      />
+      
+      <Tabs defaultValue="classes" value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="grid w-full grid-cols-2 mb-6">
+          <TabsTrigger value="classes">Class Templates</TabsTrigger>
+          <TabsTrigger value="schedule">Schedule</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="classes">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {classes && classes.length > 0 ? (
+              classes.map((bjjClass) => (
+                <Card key={bjjClass.id} className="flex flex-col">
+                  <CardHeader>
+                    <CardTitle>{bjjClass.title}</CardTitle>
+                    <CardDescription>
+                      {bjjClass.type.toUpperCase()} | {bjjClass.level.replace('-', ' ').toUpperCase()}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex-1">
+                    <p className="text-sm text-muted-foreground">
+                      {bjjClass.description || "No description available."}
+                    </p>
+                    
+                    <div className="mt-4 space-y-2">
+                      <div className="flex items-center">
+                        <Users className="h-4 w-4 mr-2 text-muted-foreground" />
+                        <span className="text-sm">Max Capacity: {bjjClass.maxCapacity || "Unlimited"}</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                  <CardFooter className="border-t pt-4 gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="flex-1"
+                      onClick={() => handleEdit(bjjClass)}
+                    >
+                      <Edit className="h-4 w-4 mr-1" />
+                      Edit
+                    </Button>
+                    <Button 
+                      variant="destructive" 
+                      size="sm" 
+                      className="flex-1"
+                      onClick={() => handleDelete(bjjClass.id)}
+                      disabled={deleteMutation.isPending}
+                    >
+                      <Trash2 className="h-4 w-4 mr-1" />
+                      Delete
+                    </Button>
+                  </CardFooter>
+                </Card>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-8">
+                <p className="text-muted-foreground">No classes defined yet. Create your first class!</p>
               </div>
-            </TabsContent>
-            
-            <TabsContent value="schedule">
-              <ClassScheduler />
-            </TabsContent>
-          </Tabs>
-        </div>
-      </main>
+            )}
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="schedule">
+          <ClassScheduler />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

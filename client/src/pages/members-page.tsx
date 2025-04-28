@@ -1,35 +1,18 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useAuth } from "@/hooks/use-auth";
-import { Link, useRoute } from "wouter";
-import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 
-// UI Components
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { 
-  Table, 
-  TableBody, 
-  TableCaption, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from "@/components/ui/table";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardFooter, 
-  CardHeader, 
-  CardTitle 
-} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import {
   Dialog,
   DialogContent,
@@ -40,21 +23,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -62,22 +30,32 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { 
-  Search, 
-  MoreHorizontal, 
-  Plus, 
-  Edit, 
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Search,
+  Edit,
+  MoreHorizontal,
+  Calendar,
   Trash2, 
   Loader2,
   UserPlus
 } from "lucide-react";
 import UserAvatar from "@/components/user-avatar";
-import { Badge } from "@/components/ui/badge";
+import { PageHeader } from "@/components/page-header";
 
 // Form schemas
 const memberSchema = z.object({
@@ -428,197 +406,196 @@ export default function MembersPage() {
 
   return (
     <div className="container mx-auto p-4 space-y-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
-        <div>
-          <h1 className="text-3xl font-bold">Members</h1>
-          <p className="text-muted-foreground">Manage club members and track their progress</p>
-        </div>
-        
-        {/* Action buttons on the right */}
-        <div className="flex items-center gap-2">
-          {isInstructor && (
-            <Dialog open={isDialogOpen} onOpenChange={handleMemberDialogChange}>
-              <DialogTrigger asChild>
-                <Button>
-                  <UserPlus className="mr-2 h-4 w-4" />
-                  Add Member
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[500px]">
-                <DialogHeader>
-                  <DialogTitle>{editMember ? "Edit Member" : "Add New Member"}</DialogTitle>
-                  <DialogDescription>
-                    {editMember 
-                      ? "Update member details below."
-                      : "Fill out the form below to add a new member."}
-                  </DialogDescription>
-                </DialogHeader>
-                
-                <Form {...memberForm}>
-                  <form onSubmit={memberForm.handleSubmit(onMemberSubmit)} className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <FormField
-                        control={memberForm.control}
-                        name="username"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Username</FormLabel>
-                            <FormControl>
-                              <Input placeholder="username" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={memberForm.control}
-                        name="displayName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Full Name</FormLabel>
-                            <FormControl>
-                              <Input placeholder="John Doe" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    
-                    <FormField
-                      control={memberForm.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Email</FormLabel>
-                          <FormControl>
-                            <Input type="email" placeholder="email@example.com" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <div className="grid grid-cols-2 gap-4">
-                      <FormField
-                        control={memberForm.control}
-                        name="role"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Role</FormLabel>
-                            <Select 
-                              onValueChange={field.onChange} 
-                              defaultValue={field.value}
-                            >
+      <PageHeader
+        title="Members"
+        description="Manage club members and track their progress"
+        breadcrumbs={[{ label: "Members" }]}
+        actions={
+          <div className="flex items-center gap-2">
+            {isInstructor && (
+              <Dialog open={isDialogOpen} onOpenChange={handleMemberDialogChange}>
+                <DialogTrigger asChild>
+                  <Button>
+                    <UserPlus className="mr-2 h-4 w-4" />
+                    Add Member
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[500px]">
+                  <DialogHeader>
+                    <DialogTitle>{editMember ? "Edit Member" : "Add New Member"}</DialogTitle>
+                    <DialogDescription>
+                      {editMember 
+                        ? "Update member details below."
+                        : "Fill out the form below to add a new member."}
+                    </DialogDescription>
+                  </DialogHeader>
+                  
+                  <Form {...memberForm}>
+                    <form onSubmit={memberForm.handleSubmit(onMemberSubmit)} className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={memberForm.control}
+                          name="username"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Username</FormLabel>
                               <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select a role" />
-                                </SelectTrigger>
+                                <Input placeholder="username" {...field} />
                               </FormControl>
-                              <SelectContent>
-                                <SelectItem value="student">Student</SelectItem>
-                                <SelectItem value="instructor">Instructor</SelectItem>
-                                <SelectItem value="admin">Admin</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={memberForm.control}
-                        name="beltRank"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Belt Rank</FormLabel>
-                            <Select 
-                              onValueChange={field.onChange} 
-                              defaultValue={field.value}
-                            >
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={memberForm.control}
+                          name="displayName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Full Name</FormLabel>
                               <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select a belt" />
-                                </SelectTrigger>
+                                <Input placeholder="John Doe" {...field} />
                               </FormControl>
-                              <SelectContent>
-                                <SelectItem value="white">White Belt</SelectItem>
-                                <SelectItem value="blue">Blue Belt</SelectItem>
-                                <SelectItem value="purple">Purple Belt</SelectItem>
-                                <SelectItem value="brown">Brown Belt</SelectItem>
-                                <SelectItem value="black">Black Belt</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-4">
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      
                       <FormField
                         control={memberForm.control}
-                        name="joinDate"
+                        name="email"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Join Date</FormLabel>
+                            <FormLabel>Email</FormLabel>
                             <FormControl>
-                              <Input type="date" {...field} />
+                              <Input type="email" placeholder="email@example.com" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
                       
-                      <FormField
-                        control={memberForm.control}
-                        name="phone"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Phone Number</FormLabel>
-                            <FormControl>
-                              <Input placeholder="+1 (555) 123-4567" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    
-                    <DialogFooter>
-                      <Button 
-                        type="submit" 
-                        disabled={saveMemberMutation.isPending}
-                      >
-                        {saveMemberMutation.isPending ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Saving...
-                          </>
-                        ) : (
-                          <>Save</>
-                        )}
-                      </Button>
-                    </DialogFooter>
-                  </form>
-                </Form>
-              </DialogContent>
-            </Dialog>
-          )}
-          
-          <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input 
-              type="search" 
-              placeholder="Search members..." 
-              className="pl-9 w-64"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={memberForm.control}
+                          name="role"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Role</FormLabel>
+                              <Select 
+                                onValueChange={field.onChange} 
+                                defaultValue={field.value}
+                              >
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select a role" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="student">Student</SelectItem>
+                                  <SelectItem value="instructor">Instructor</SelectItem>
+                                  <SelectItem value="admin">Admin</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={memberForm.control}
+                          name="beltRank"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Belt Rank</FormLabel>
+                              <Select 
+                                onValueChange={field.onChange} 
+                                defaultValue={field.value}
+                              >
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select a belt" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="white">White Belt</SelectItem>
+                                  <SelectItem value="blue">Blue Belt</SelectItem>
+                                  <SelectItem value="purple">Purple Belt</SelectItem>
+                                  <SelectItem value="brown">Brown Belt</SelectItem>
+                                  <SelectItem value="black">Black Belt</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={memberForm.control}
+                          name="joinDate"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Join Date</FormLabel>
+                              <FormControl>
+                                <Input type="date" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={memberForm.control}
+                          name="phone"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Phone Number</FormLabel>
+                              <FormControl>
+                                <Input placeholder="+1 (555) 123-4567" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      
+                      <DialogFooter>
+                        <Button 
+                          type="submit" 
+                          disabled={saveMemberMutation.isPending}
+                        >
+                          {saveMemberMutation.isPending ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              Saving...
+                            </>
+                          ) : (
+                            <>Save</>
+                          )}
+                        </Button>
+                      </DialogFooter>
+                    </form>
+                  </Form>
+                </DialogContent>
+              </Dialog>
+            )}
+            
+            <div className="relative">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input 
+                type="search" 
+                placeholder="Search members..." 
+                className="pl-9 w-64"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
           </div>
-        </div>
-      </div>
+        }
+      />
       
       {/* Tabs navigation */}
       <Tabs defaultValue="administration" value={activeTab} onValueChange={setActiveTab} className="space-y-4">
@@ -694,9 +671,10 @@ export default function MembersPage() {
                                     <Edit className="mr-2 h-4 w-4" />
                                     Edit
                                   </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
                                   <DropdownMenuItem 
                                     onClick={() => handleDeleteMember(member.id)}
-                                    className="text-red-500"
+                                    className="text-red-600 focus:text-red-600"
                                   >
                                     <Trash2 className="mr-2 h-4 w-4" />
                                     Delete
@@ -717,32 +695,39 @@ export default function MembersPage() {
         
         {/* Member Growth Tab Content */}
         <TabsContent value="growth" className="space-y-4">
-          {selectedMember && (
+          {!selectedMember ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">Select a member to view their progression.</p>
+            </div>
+          ) : (
             <>
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
-                <div className="flex items-center gap-4">
-                  <UserAvatar username={selectedMember.username} size="lg" />
-                  <div>
-                    <h2 className="text-2xl font-bold">
-                      {selectedMember.displayName || selectedMember.username}
-                    </h2>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Badge className={getBeltColorClass(selectedMember.beltRank || "white")}>
-                        {selectedMember.beltRank ? `${selectedMember.beltRank.charAt(0).toUpperCase() + selectedMember.beltRank.slice(1)} Belt` : "White Belt"}
-                      </Badge>
-                      <span className="text-sm text-muted-foreground">
-                        Member since {selectedMember.joinDate ? new Date(selectedMember.joinDate).toLocaleDateString() : "N/A"}
-                      </span>
+              <Card className="mb-4">
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-4">
+                    <UserAvatar username={selectedMember.username} size="lg" />
+                    <div>
+                      <h3 className="text-xl font-medium">{selectedMember.displayName || selectedMember.username}</h3>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Badge className={getBeltColorClass(selectedMember.beltRank || "white")}>
+                          {selectedMember.beltRank ? `${selectedMember.beltRank.charAt(0).toUpperCase() + selectedMember.beltRank.slice(1)} Belt` : "White Belt"}
+                        </Badge>
+                        <span className="text-sm text-muted-foreground">Member since: {selectedMember.joinDate || "N/A"}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </CardContent>
+              </Card>
+              
+              {/* Progress Notes */}
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-medium">Progress Notes</h3>
                 
                 {isInstructor && (
                   <Dialog open={progressDialogOpen} onOpenChange={handleProgressDialogChange}>
                     <DialogTrigger asChild>
                       <Button>
                         <Plus className="mr-2 h-4 w-4" />
-                        Add Progress Note
+                        Add Note
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[500px]">
@@ -750,8 +735,8 @@ export default function MembersPage() {
                         <DialogTitle>{editProgressNote ? "Edit Progress Note" : "Add Progress Note"}</DialogTitle>
                         <DialogDescription>
                           {editProgressNote 
-                            ? "Update progress note details."
-                            : `Add a progress note for ${selectedMember.displayName || selectedMember.username}.`}
+                            ? "Update progress note details below."
+                            : `Add a new progress note for ${selectedMember.displayName || selectedMember.username}.`}
                         </DialogDescription>
                       </DialogHeader>
                       
@@ -788,9 +773,9 @@ export default function MembersPage() {
                                       </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                      <SelectItem value="general">General Note</SelectItem>
-                                      <SelectItem value="technique">Technique Progress</SelectItem>
-                                      <SelectItem value="promotion">Promotion Note</SelectItem>
+                                      <SelectItem value="general">General</SelectItem>
+                                      <SelectItem value="technique">Technique</SelectItem>
+                                      <SelectItem value="promotion">Promotion</SelectItem>
                                     </SelectContent>
                                   </Select>
                                   <FormMessage />
@@ -806,7 +791,7 @@ export default function MembersPage() {
                               <FormItem>
                                 <FormLabel>Title</FormLabel>
                                 <FormControl>
-                                  <Input placeholder="Progress note title" {...field} />
+                                  <Input placeholder="Note title" {...field} />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -818,10 +803,10 @@ export default function MembersPage() {
                             name="content"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Note Content</FormLabel>
+                                <FormLabel>Content</FormLabel>
                                 <FormControl>
                                   <Textarea 
-                                    placeholder="Detailed notes about progress..." 
+                                    placeholder="Note content..." 
                                     {...field} 
                                     rows={5}
                                   />
@@ -854,74 +839,61 @@ export default function MembersPage() {
               </div>
               
               <Card>
-                <CardHeader>
-                  <CardTitle>Progress Notes</CardTitle>
-                  <CardDescription>
-                    Track member's growth and progressions
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
+                <CardContent className="p-6">
                   {isLoadingNotes ? (
                     <div className="flex justify-center items-center py-12">
                       <Loader2 className="h-8 w-8 animate-spin text-primary" />
                     </div>
                   ) : !progressNotes || progressNotes.length === 0 ? (
-                    <div className="text-center py-12">
-                      <p className="text-muted-foreground">No progress notes recorded for this member yet.</p>
-                      {isInstructor && (
-                        <Button 
-                          variant="outline" 
-                          className="mt-4"
-                          onClick={() => setProgressDialogOpen(true)}
-                        >
-                          <Plus className="mr-2 h-4 w-4" />
-                          Add First Note
-                        </Button>
-                      )}
+                    <div className="text-center py-8">
+                      <p className="text-muted-foreground">No progress notes found. {isInstructor && "Add a new note to track this member's progress."}</p>
                     </div>
                   ) : (
-                    <div className="space-y-4">
-                      {progressNotes
-                        .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
-                        .map((note: any) => (
-                          <Card key={note.id} className="border-l-4 border-l-primary">
-                            <CardHeader className="pb-2">
-                              <div className="flex justify-between items-start">
-                                <div>
-                                  <Badge className={getNoteTypeStyle(note.noteType)}>
-                                    {note.noteType.charAt(0).toUpperCase() + note.noteType.slice(1)}
-                                  </Badge>
-                                  <CardTitle className="mt-2 text-lg">{note.title}</CardTitle>
-                                  <CardDescription>
-                                    {new Date(note.date).toLocaleDateString()}
-                                  </CardDescription>
-                                </div>
-                                {isInstructor && (
-                                  <div className="flex gap-1">
-                                    <Button 
-                                      variant="ghost" 
-                                      size="sm"
-                                      onClick={() => handleEditProgressNote(note)}
-                                    >
-                                      <Edit className="h-4 w-4" />
-                                    </Button>
-                                    <Button 
-                                      variant="ghost" 
-                                      size="sm"
-                                      onClick={() => handleDeleteProgressNote(note.id)}
-                                      className="text-destructive"
-                                    >
-                                      <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                  </div>
-                                )}
+                    <div className="space-y-6">
+                      {progressNotes.map((note: any) => (
+                        <div key={note.id} className="p-4 border rounded-lg">
+                          <div className="flex justify-between items-start mb-2">
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <h4 className="font-medium">{note.title}</h4>
+                                <Badge className={getNoteTypeStyle(note.noteType)}>
+                                  {note.noteType.charAt(0).toUpperCase() + note.noteType.slice(1)}
+                                </Badge>
                               </div>
-                            </CardHeader>
-                            <CardContent>
-                              <p className="whitespace-pre-line">{note.content}</p>
-                            </CardContent>
-                          </Card>
-                        ))}
+                              <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+                                <Calendar className="h-3 w-3" />
+                                <span>{note.date}</span>
+                              </div>
+                            </div>
+                            
+                            {isInstructor && (
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="sm">
+                                    <MoreHorizontal className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem onClick={() => handleEditProgressNote(note)}>
+                                    <Edit className="mr-2 h-4 w-4" />
+                                    Edit
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem 
+                                    onClick={() => handleDeleteProgressNote(note.id)}
+                                    className="text-red-600 focus:text-red-600"
+                                  >
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    Delete
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            )}
+                          </div>
+                          
+                          <p className="mt-2 text-sm">{note.content}</p>
+                        </div>
+                      ))}
                     </div>
                   )}
                 </CardContent>

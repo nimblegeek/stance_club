@@ -1,6 +1,6 @@
 import { useAuth } from "@/hooks/use-auth";
 import { Loader2 } from "lucide-react";
-import NavHeader from "@/components/nav-header";
+import { PageHeader } from "@/components/page-header";
 import AccountHeader from "@/components/account-header";
 import ProjectCard from "@/components/project-card";
 import CalendarView from "@/components/calendar-view";

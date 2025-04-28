@@ -1,26 +1,26 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
-import { z } from "zod";
+import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { format, parseISO, isAfter } from "date-fns";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
-import { format, isAfter, parseISO } from "date-fns";
+import { PageHeader } from "@/components/page-header";
 
 // UI Components
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Calendar } from "@/components/ui/calendar";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import {
   Dialog,
   DialogContent,
@@ -30,15 +30,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -46,12 +38,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -59,13 +46,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   Search,
   Plus,
@@ -280,7 +260,7 @@ export default function EventsPage() {
         id: editEvent ? editEvent.id : Date.now(),
         createdAt: new Date().toISOString(),
         attendeeCount: 0
-      };
+      } as Event;
     },
     onSuccess: (savedEvent) => {
       // This would be the actual implementation once the API is ready
@@ -387,44 +367,139 @@ export default function EventsPage() {
 
   return (
     <div className="container mx-auto p-4 space-y-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
-        <div>
-          <h1 className="text-3xl font-bold">Events</h1>
-          <p className="text-muted-foreground">Manage seminars, open mats, and jiujitsu events</p>
-        </div>
-        
-        {/* Action buttons on the right */}
-        <div className="flex items-center gap-2">
-          {isInstructor && (
-            <Dialog open={isDialogOpen} onOpenChange={handleDialogChange}>
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Create Event
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[700px]">
-                <DialogHeader>
-                  <DialogTitle>{editEvent ? "Edit Event" : "Create New Event"}</DialogTitle>
-                  <DialogDescription>
-                    {editEvent 
-                      ? "Update event details below."
-                      : "Fill out the form below to create a new event."}
-                  </DialogDescription>
-                </DialogHeader>
-                
-                <Form {...eventForm}>
-                  <form onSubmit={eventForm.handleSubmit(onSubmit)} className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-4 md:col-span-2">
+      <PageHeader
+        title="Events"
+        description="Manage seminars, open mats, and jiujitsu events"
+        breadcrumbs={[{ label: "Events" }]}
+        actions={
+          <div className="flex items-center gap-2">
+            {isInstructor && (
+              <Dialog open={isDialogOpen} onOpenChange={handleDialogChange}>
+                <DialogTrigger asChild>
+                  <Button>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Create Event
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[700px]">
+                  <DialogHeader>
+                    <DialogTitle>{editEvent ? "Edit Event" : "Create New Event"}</DialogTitle>
+                    <DialogDescription>
+                      {editEvent 
+                        ? "Update event details below."
+                        : "Fill out the form below to create a new event."}
+                    </DialogDescription>
+                  </DialogHeader>
+                  
+                  <Form {...eventForm}>
+                    <form onSubmit={eventForm.handleSubmit(onSubmit)} className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-4 md:col-span-2">
+                          <FormField
+                            control={eventForm.control}
+                            name="title"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Event Title</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Seminar with Professor Smith" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        
                         <FormField
                           control={eventForm.control}
-                          name="title"
+                          name="eventType"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Event Title</FormLabel>
+                              <FormLabel>Event Type</FormLabel>
+                              <Select 
+                                onValueChange={field.onChange} 
+                                defaultValue={field.value}
+                              >
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select event type" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="seminar">Seminar</SelectItem>
+                                  <SelectItem value="open-mat">Open Mat</SelectItem>
+                                  <SelectItem value="tournament">Tournament</SelectItem>
+                                  <SelectItem value="promotion">Promotion Ceremony</SelectItem>
+                                  <SelectItem value="social">Social Event</SelectItem>
+                                  <SelectItem value="other">Other</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={eventForm.control}
+                          name="date"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-col">
+                              <FormLabel>Date</FormLabel>
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <FormControl>
+                                    <Button
+                                      variant={"outline"}
+                                      className={`pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""}`}
+                                    >
+                                      {field.value ? (
+                                        format(new Date(field.value), "PPP")
+                                      ) : (
+                                        <span>Select a date</span>
+                                      )}
+                                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                    </Button>
+                                  </FormControl>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                  <Calendar
+                                    mode="single"
+                                    selected={field.value ? new Date(field.value) : undefined}
+                                    onSelect={(date) => field.onChange(date ? format(date, "yyyy-MM-dd") : "")}
+                                    disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                                    initialFocus
+                                  />
+                                </PopoverContent>
+                              </Popover>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={eventForm.control}
+                          name="startTime"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Start Time</FormLabel>
                               <FormControl>
-                                <Input placeholder="Seminar with Professor Smith" {...field} />
+                                <Input type="time" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={eventForm.control}
+                          name="endTime"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>End Time</FormLabel>
+                              <FormControl>
+                                <Input type="time" {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -432,83 +507,92 @@ export default function EventsPage() {
                         />
                       </div>
                       
-                      <FormField
-                        control={eventForm.control}
-                        name="eventType"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Event Type</FormLabel>
-                            <Select 
-                              onValueChange={field.onChange} 
-                              defaultValue={field.value}
-                            >
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={eventForm.control}
+                          name="location"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Location</FormLabel>
                               <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select event type" />
-                                </SelectTrigger>
+                                <Input placeholder="Main Dojo" {...field} />
                               </FormControl>
-                              <SelectContent>
-                                <SelectItem value="seminar">Seminar</SelectItem>
-                                <SelectItem value="open-mat">Open Mat</SelectItem>
-                                <SelectItem value="tournament">Tournament</SelectItem>
-                                <SelectItem value="promotion">Promotion Ceremony</SelectItem>
-                                <SelectItem value="social">Social Event</SelectItem>
-                                <SelectItem value="other">Other</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={eventForm.control}
+                          name="cost"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Cost</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Free" {...field} />
+                              </FormControl>
+                              <FormDescription>Enter "Free" or the price (e.g., "$25")</FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
                       
-                      <FormField
-                        control={eventForm.control}
-                        name="date"
-                        render={({ field }) => (
-                          <FormItem className="flex flex-col">
-                            <FormLabel>Date</FormLabel>
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <FormControl>
-                                  <Button
-                                    variant={"outline"}
-                                    className={`pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""}`}
-                                  >
-                                    {field.value ? (
-                                      format(new Date(field.value), "PPP")
-                                    ) : (
-                                      <span>Select a date</span>
-                                    )}
-                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                  </Button>
-                                </FormControl>
-                              </PopoverTrigger>
-                              <PopoverContent className="w-auto p-0" align="start">
-                                <Calendar
-                                  mode="single"
-                                  selected={field.value ? new Date(field.value) : undefined}
-                                  onSelect={(date) => field.onChange(date ? format(date, "yyyy-MM-dd") : "")}
-                                  disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
-                                  initialFocus
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={eventForm.control}
+                          name="maxAttendees"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Maximum Attendees</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="number" 
+                                  placeholder="Leave empty if unlimited" 
+                                  {...field} 
+                                  value={field.value || ""} 
                                 />
-                              </PopoverContent>
-                            </Popover>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-4">
+                              </FormControl>
+                              <FormDescription>Leave empty for unlimited capacity</FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={eventForm.control}
+                          name="registrationRequired"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-row items-end space-x-3 space-y-0 rounded-md border p-4">
+                              <FormControl>
+                                <input
+                                  type="checkbox"
+                                  className="h-4 w-4"
+                                  checked={field.value}
+                                  onChange={field.onChange}
+                                />
+                              </FormControl>
+                              <div className="space-y-1 leading-none">
+                                <FormLabel>Registration Required</FormLabel>
+                                <FormDescription>
+                                  Members must register to attend this event
+                                </FormDescription>
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      
                       <FormField
                         control={eventForm.control}
-                        name="startTime"
+                        name="externalLink"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Start Time</FormLabel>
+                            <FormLabel>External Link (Optional)</FormLabel>
                             <FormControl>
-                              <Input type="time" {...field} />
+                              <Input placeholder="https://example.com/event" {...field} />
                             </FormControl>
+                            <FormDescription>URL for additional event information or registration</FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -516,328 +600,196 @@ export default function EventsPage() {
                       
                       <FormField
                         control={eventForm.control}
-                        name="endTime"
+                        name="description"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>End Time</FormLabel>
+                            <FormLabel>Description</FormLabel>
                             <FormControl>
-                              <Input type="time" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <FormField
-                        control={eventForm.control}
-                        name="location"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Location</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Main Dojo" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={eventForm.control}
-                        name="cost"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Cost</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Free" {...field} />
-                            </FormControl>
-                            <FormDescription>Enter "Free" or the price (e.g., "$25")</FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <FormField
-                        control={eventForm.control}
-                        name="maxAttendees"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Maximum Attendees</FormLabel>
-                            <FormControl>
-                              <Input 
-                                type="number" 
-                                placeholder="Leave empty if unlimited" 
+                              <Textarea 
+                                placeholder="Detailed description of the event..." 
                                 {...field} 
-                                value={field.value || ""} 
+                                rows={5}
                               />
                             </FormControl>
-                            <FormDescription>Leave empty for unlimited capacity</FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
                       
-                      <FormField
-                        control={eventForm.control}
-                        name="registrationRequired"
-                        render={({ field }) => (
-                          <FormItem className="flex flex-row items-end space-x-3 space-y-0 rounded-md border p-4">
-                            <FormControl>
-                              <input
-                                type="checkbox"
-                                className="h-4 w-4"
-                                checked={field.value}
-                                onChange={field.onChange}
-                              />
-                            </FormControl>
-                            <div className="space-y-1 leading-none">
-                              <FormLabel>Registration Required</FormLabel>
-                              <FormDescription>
-                                Members must register to attend this event
-                              </FormDescription>
-                            </div>
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    
-                    <FormField
-                      control={eventForm.control}
-                      name="externalLink"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>External Link (Optional)</FormLabel>
-                          <FormControl>
-                            <Input placeholder="https://example.com/event" {...field} />
-                          </FormControl>
-                          <FormDescription>URL for additional event information or registration</FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={eventForm.control}
-                      name="description"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Description</FormLabel>
-                          <FormControl>
-                            <Textarea 
-                              placeholder="Detailed description of the event..." 
-                              {...field} 
-                              rows={5}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <DialogFooter>
-                      <Button 
-                        type="submit" 
-                        disabled={saveEventMutation.isPending}
-                      >
-                        {saveEventMutation.isPending ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Saving...
-                          </>
-                        ) : (
-                          <>Save Event</>
-                        )}
-                      </Button>
-                    </DialogFooter>
-                  </form>
-                </Form>
-              </DialogContent>
-            </Dialog>
-          )}
-          
-          <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input 
-              type="search" 
-              placeholder="Search events..." 
-              className="pl-9 w-64"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+                      <DialogFooter>
+                        <Button 
+                          type="submit" 
+                          disabled={saveEventMutation.isPending}
+                        >
+                          {saveEventMutation.isPending ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              Saving...
+                            </>
+                          ) : (
+                            <>Save</>
+                          )}
+                        </Button>
+                      </DialogFooter>
+                    </form>
+                  </Form>
+                </DialogContent>
+              </Dialog>
+            )}
+            
+            <div className="relative">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input 
+                type="search" 
+                placeholder="Search events..." 
+                className="pl-9 w-64"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
           </div>
-        </div>
-      </div>
+        }
+      />
       
-      {/* Event type tabs */}
-      <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="flex flex-wrap">
+      {/* Tabs for filtering events */}
+      <Tabs defaultValue={activeTab} value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="w-full border-b pb-0">
           <TabsTrigger value="all">All Events</TabsTrigger>
           <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
           <TabsTrigger value="seminar">Seminars</TabsTrigger>
           <TabsTrigger value="open-mat">Open Mats</TabsTrigger>
           <TabsTrigger value="tournament">Tournaments</TabsTrigger>
-          <TabsTrigger value="social">Social Events</TabsTrigger>
+          <TabsTrigger value="social">Social</TabsTrigger>
         </TabsList>
         
-        <TabsContent value={activeTab} className="space-y-4">
+        <TabsContent value={activeTab} className="pt-6">
           {isLoading ? (
             <div className="flex justify-center items-center py-12">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
           ) : filteredEvents.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">No events found. {isInstructor && "Create a new event to get started."}</p>
+            <div className="text-center py-8">
+              <p className="text-muted-foreground">No events found.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredEvents.map((event) => (
-                <EventCard 
-                  key={event.id} 
-                  event={event} 
-                  isInstructor={isInstructor} 
-                  onEdit={() => handleEditEvent(event)}
-                  onDelete={() => handleDeleteEvent(event.id)}
-                />
+                <Card key={event.id} className="overflow-hidden flex flex-col">
+                  <CardHeader className={`
+                    ${event.eventType === "seminar" ? "bg-blue-50 dark:bg-blue-900/20" : ""}
+                    ${event.eventType === "open-mat" ? "bg-green-50 dark:bg-green-900/20" : ""}
+                    ${event.eventType === "tournament" ? "bg-amber-50 dark:bg-amber-900/20" : ""}
+                    ${event.eventType === "promotion" ? "bg-purple-50 dark:bg-purple-900/20" : ""}
+                    ${event.eventType === "social" ? "bg-pink-50 dark:bg-pink-900/20" : ""}
+                    ${event.eventType === "other" ? "bg-slate-50 dark:bg-slate-900/20" : ""}
+                  `}>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <CardTitle className="mb-1">{event.title}</CardTitle>
+                        <Badge className={`
+                          ${event.eventType === "seminar" ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300" : ""}
+                          ${event.eventType === "open-mat" ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300" : ""}
+                          ${event.eventType === "tournament" ? "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300" : ""}
+                          ${event.eventType === "promotion" ? "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300" : ""}
+                          ${event.eventType === "social" ? "bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-300" : ""}
+                          ${event.eventType === "other" ? "bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-300" : ""}
+                        `}>
+                          {event.eventType.replace("-", " ").replace(/^\w/, c => c.toUpperCase())}
+                        </Badge>
+                      </div>
+                      
+                      {isInstructor && (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => handleEditEvent(event)}>
+                              <Edit className="mr-2 h-4 w-4" />
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem 
+                              onClick={() => handleDeleteEvent(event.id)}
+                              className="text-red-600 focus:text-red-600"
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
+                    </div>
+                  </CardHeader>
+                  <CardContent className="py-4 flex-1">
+                    <div className="space-y-3">
+                      <div className="flex items-start">
+                        <CalendarIcon className="h-4 w-4 mr-2 mt-0.5 text-muted-foreground" />
+                        <div>
+                          <p>{format(parseISO(event.date), "EEEE, MMMM d, yyyy")}</p>
+                          <div className="flex items-center mt-1">
+                            <Clock className="h-3 w-3 mr-1 text-muted-foreground" />
+                            <p className="text-sm text-muted-foreground">
+                              {event.startTime} - {event.endTime}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-start">
+                        <MapPin className="h-4 w-4 mr-2 mt-0.5 text-muted-foreground" />
+                        <p>{event.location}</p>
+                      </div>
+                      
+                      {event.maxAttendees && (
+                        <div className="flex items-start">
+                          <Users className="h-4 w-4 mr-2 mt-0.5 text-muted-foreground" />
+                          <div>
+                            <p>Capacity: {event.attendeeCount || 0} / {event.maxAttendees}</p>
+                            {event.registrationRequired && (
+                              <p className="text-sm text-muted-foreground mt-0.5">Registration required</p>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {event.cost && event.cost !== "Free" && (
+                        <p className="text-sm font-medium">Cost: {event.cost}</p>
+                      )}
+                      
+                      <p className="text-sm text-muted-foreground line-clamp-3 mt-2">
+                        {event.description}
+                      </p>
+                    </div>
+                  </CardContent>
+                  <CardFooter className="flex justify-between border-t p-4">
+                    <Button 
+                      variant="default" 
+                      size="sm"
+                      className="w-full"
+                    >
+                      {event.registrationRequired ? "Register" : "View Details"}
+                    </Button>
+                    
+                    {event.externalLink && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="ml-2"
+                        onClick={() => window.open(event.externalLink, "_blank")}
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </CardFooter>
+                </Card>
               ))}
             </div>
           )}
         </TabsContent>
       </Tabs>
     </div>
-  );
-}
-
-// Event card component
-function EventCard({ 
-  event, 
-  isInstructor, 
-  onEdit, 
-  onDelete 
-}: { 
-  event: Event; 
-  isInstructor: boolean; 
-  onEdit: () => void;
-  onDelete: () => void;
-}) {
-  const eventDate = new Date(event.date);
-  const isUpcoming = isAfter(eventDate, new Date());
-  
-  // Helper function to get event type badge styling
-  const getEventTypeBadge = (type: string) => {
-    switch (type) {
-      case "seminar":
-        return "bg-blue-100 text-blue-800";
-      case "open-mat":
-        return "bg-green-100 text-green-800";
-      case "tournament":
-        return "bg-amber-100 text-amber-800";
-      case "promotion":
-        return "bg-purple-100 text-purple-800";
-      case "social":
-        return "bg-pink-100 text-pink-800";
-      default:
-        return "bg-slate-100 text-slate-800";
-    }
-  };
-
-  return (
-    <Card className={`overflow-hidden ${!isUpcoming ? "opacity-75" : ""}`}>
-      <div className={`h-2 ${getEventTypeBadge(event.eventType)}`}></div>
-      <CardHeader className="pb-2">
-        <div className="flex justify-between items-start">
-          <Badge className={getEventTypeBadge(event.eventType)}>
-            {event.eventType === "open-mat" ? "Open Mat" : 
-             event.eventType === "seminar" ? "Seminar" :
-             event.eventType === "tournament" ? "Tournament" :
-             event.eventType === "promotion" ? "Promotion" :
-             event.eventType === "social" ? "Social Event" : "Other"}
-          </Badge>
-          
-          {isInstructor && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="-mt-2">
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={onEdit}>
-                  <Edit className="mr-2 h-4 w-4" />
-                  Edit
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem 
-                  onClick={onDelete}
-                  className="text-red-500"
-                >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
-        </div>
-        
-        <CardTitle className="text-lg mt-1">{event.title}</CardTitle>
-        <CardDescription>
-          <div className="flex items-center mt-1">
-            <CalendarIcon className="h-4 w-4 mr-1" />
-            <span>{format(new Date(event.date), "EEEE, MMMM d, yyyy")}</span>
-          </div>
-          <div className="flex items-center mt-1">
-            <Clock className="h-4 w-4 mr-1" />
-            <span>{event.startTime} - {event.endTime}</span>
-          </div>
-        </CardDescription>
-      </CardHeader>
-      
-      <CardContent>
-        <div className="flex items-start mt-1">
-          <MapPin className="h-4 w-4 mr-1 mt-0.5 flex-shrink-0" />
-          <span>{event.location}</span>
-        </div>
-        
-        {event.cost && (
-          <div className="mt-4">
-            <Badge variant="outline">
-              {event.cost}
-            </Badge>
-          </div>
-        )}
-        
-        <p className="mt-4 text-sm text-muted-foreground line-clamp-3">
-          {event.description}
-        </p>
-      </CardContent>
-      
-      <CardFooter className="flex justify-between border-t pt-4">
-        <div className="flex items-center text-sm text-muted-foreground">
-          <Users className="h-4 w-4 mr-1" />
-          {event.attendeeCount || 0} attending
-          {event.maxAttendees && ` / ${event.maxAttendees} max`}
-        </div>
-        
-        <div className="flex gap-2">
-          {event.externalLink && (
-            <Button size="sm" variant="outline" className="gap-1" asChild>
-              <a href={event.externalLink} target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="h-3.5 w-3.5" />
-                <span>Details</span>
-              </a>
-            </Button>
-          )}
-          
-          {isUpcoming && (
-            <Button size="sm">
-              {event.registrationRequired ? "Register" : "Attend"}
-            </Button>
-          )}
-        </div>
-      </CardFooter>
-    </Card>
   );
 }
