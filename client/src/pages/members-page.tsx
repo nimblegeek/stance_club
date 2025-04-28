@@ -52,7 +52,8 @@ import {
   Calendar,
   Trash2, 
   Loader2,
-  UserPlus
+  UserPlus,
+  Plus
 } from "lucide-react";
 import UserAvatar from "@/components/user-avatar";
 import { PageHeader } from "@/components/page-header";

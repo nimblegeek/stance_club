@@ -62,12 +62,15 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      {/* Header */}
-      <NavHeader />
-
       {/* Main Content */}
       <main className="flex-1 overflow-auto py-6 px-4">
         <div className="container mx-auto">
+          <PageHeader
+            title="Dashboard"
+            description="Welcome to DojoMaster"
+            breadcrumbs={[{ label: "Dashboard" }]}
+          />
+          
           {/* Account Info & Actions */}
           <AccountHeader username={user.username} />
 
