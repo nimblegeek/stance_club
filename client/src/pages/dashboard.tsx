@@ -1,6 +1,7 @@
 import { useAuth } from "@/hooks/use-auth";
 import { Loader2 } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
+import NavHeader from "@/components/nav-header";
 import AccountHeader from "@/components/account-header";
 import ProjectCard from "@/components/project-card";
 import CalendarView from "@/components/calendar-view";
@@ -62,6 +63,9 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      {/* Header */}
+      <NavHeader />
+      
       {/* Main Content */}
       <main className="flex-1 overflow-auto py-6 px-4">
         <div className="container mx-auto">

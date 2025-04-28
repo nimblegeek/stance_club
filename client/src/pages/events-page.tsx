@@ -8,6 +8,7 @@ import { z } from "zod";
 import { format, parseISO, isAfter } from "date-fns";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { PageHeader } from "@/components/page-header";
+import NavHeader from "@/components/nav-header";
 
 // UI Components
 import { Button } from "@/components/ui/button";
