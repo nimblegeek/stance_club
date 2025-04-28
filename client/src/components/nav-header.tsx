@@ -89,7 +89,8 @@ export default function NavHeader() {
 
   const [location] = useLocation();
 
-  const navItems = [
+  // Base navigation items available to all users
+  let navItems = [
     {
       name: "Dashboard",
       icon: <Home className="h-4 w-4 mr-2" />,
@@ -114,13 +115,17 @@ export default function NavHeader() {
       path: "/events",
       active: location === "/events",
     },
-    {
+  ];
+  
+  // Add Reports link only for admin users
+  if (user?.role === "admin") {
+    navItems.push({
       name: "Reports",
       icon: <BarChart className="h-4 w-4 mr-2" />,
       path: "/reports",
       active: location === "/reports",
-    },
-  ];
+    });
+  }
 
   return (
     <header className="bg-card border-b border-border px-4 py-3">

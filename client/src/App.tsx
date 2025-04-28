@@ -8,7 +8,7 @@ import ClassManagement from "@/pages/class-management";
 import MembersPage from "@/pages/members-page";
 import EventsPage from "@/pages/events-page";
 import ReportsPage from "@/pages/reports-page";
-import { ProtectedRoute } from "./lib/protected-route";
+import { ProtectedRoute, AdminRoute } from "./lib/protected-route";
 import { AuthProvider } from "./hooks/use-auth";
 
 function Router() {
@@ -18,7 +18,7 @@ function Router() {
       <ProtectedRoute path="/classes" component={ClassManagement} />
       <ProtectedRoute path="/members" component={MembersPage} />
       <ProtectedRoute path="/events" component={EventsPage} />
-      <ProtectedRoute path="/reports" component={ReportsPage} />
+      <AdminRoute path="/reports" component={ReportsPage} />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>

@@ -80,7 +80,10 @@ export default function Dashboard() {
           <AccountHeader username={user.username} />
           
           {/* Admin Access Button for testing */}
-          <div className="mb-6 flex justify-center">
+          <div className="mb-6 flex flex-col items-center">
+            <p className="text-muted-foreground text-sm mb-2">
+              Need access to Reports? Click below to grant admin privileges:
+            </p>
             <AdminButton />
           </div>
 

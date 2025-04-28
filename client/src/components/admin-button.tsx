@@ -20,8 +20,13 @@ export default function AdminButton() {
       
       toast({
         title: "Success",
-        description: "You are now an admin. Refresh the page to see the Reports section.",
+        description: "You are now an admin! The page will refresh in 2 seconds to update the navigation.",
       });
+      
+      // Refresh the page after a short delay to ensure navigation updates
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     } catch (error) {
       console.error("Error becoming admin:", error);
       toast({
