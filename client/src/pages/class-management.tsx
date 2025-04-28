@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { PageHeader } from "@/components/page-header";
 import NavHeader from "@/components/nav-header";
 import ClassScheduler from "@/components/class-scheduler";
+import AdminLink from "@/components/admin-link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -203,154 +204,160 @@ export default function ClassManagement() {
             description="Create and manage your classes"
             breadcrumbs={[{ label: "Classes" }]}
             actions={
-              <Dialog open={isClassDialogOpen} onOpenChange={handleDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add Class
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
-                  <DialogHeader>
-                    <DialogTitle>{editClass ? "Edit Class" : "Create New Class"}</DialogTitle>
-                    <DialogDescription>
-                      {editClass 
-                        ? "Update the class details. Click save when you're done."
-                        : "Fill in the details for the new class. Click save when you're done."}
-                    </DialogDescription>
-                  </DialogHeader>
-                  
-                  <Form {...classForm}>
-                    <form onSubmit={classForm.handleSubmit(onSubmit)} className="space-y-4">
-                      <FormField
-                        control={classForm.control}
-                        name="title"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Title</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Enter class title" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={classForm.control}
-                        name="description"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Description</FormLabel>
-                            <FormControl>
-                              <Textarea 
-                                placeholder="Describe what this class covers" 
-                                {...field} 
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <div className="grid grid-cols-2 gap-4">
-                        <FormField
-                          control={classForm.control}
-                          name="type"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Type</FormLabel>
-                              <Select 
-                                onValueChange={field.onChange} 
-                                defaultValue={field.value}
-                              >
-                                <FormControl>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select type" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  <SelectItem value="gi">Gi</SelectItem>
-                                  <SelectItem value="no-gi">No-Gi</SelectItem>
-                                  <SelectItem value="open-mat">Open Mat</SelectItem>
-                                </SelectContent>
-                              </Select>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={classForm.control}
-                          name="level"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Level</FormLabel>
-                              <Select 
-                                onValueChange={field.onChange} 
-                                defaultValue={field.value}
-                              >
-                                <FormControl>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select level" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  <SelectItem value="beginner">Beginner</SelectItem>
-                                  <SelectItem value="intermediate">Intermediate</SelectItem>
-                                  <SelectItem value="advanced">Advanced</SelectItem>
-                                  <SelectItem value="all-levels">All Levels</SelectItem>
-                                </SelectContent>
-                              </Select>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                      
-                      <FormField
-                        control={classForm.control}
-                        name="maxCapacity"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Max Capacity</FormLabel>
-                            <FormControl>
-                              <Input 
-                                type="number" 
-                                min={1}
-                                {...field}
-                                onChange={(e) => field.onChange(Number(e.target.value))}
-                              />
-                            </FormControl>
-                            <FormDescription>
-                              Maximum number of students allowed in this class
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <DialogFooter>
-                        <Button 
-                          type="submit" 
-                          disabled={saveMutation.isPending}
-                        >
-                          {saveMutation.isPending ? (
-                            <>
-                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                              Saving...
-                            </>
-                          ) : (
-                            <>Save</>
-                          )}
-                        </Button>
-                      </DialogFooter>
-                    </form>
-                  </Form>
-                </DialogContent>
-              </Dialog>
+              <div className="flex space-x-2">
+                <AdminLink />
+                <Dialog open={isClassDialogOpen} onOpenChange={handleDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button>
+                      <Plus className="mr-2 h-4 w-4" />
+                      Add Class
+                    </Button>
+                  </DialogTrigger>
+                </Dialog>
+              </div>
             }
           />
+          
+          <Dialog open={isClassDialogOpen} onOpenChange={handleDialogOpen}>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>{editClass ? "Edit Class" : "Create New Class"}</DialogTitle>
+                <DialogDescription>
+                  {editClass 
+                    ? "Update the class details. Click save when you're done."
+                    : "Fill in the details for the new class. Click save when you're done."}
+                </DialogDescription>
+              </DialogHeader>
+              
+              <Form {...classForm}>
+                <form onSubmit={classForm.handleSubmit(onSubmit)} className="space-y-4">
+                  <FormField
+                    control={classForm.control}
+                    name="title"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Title</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter class title" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={classForm.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Description</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            placeholder="Describe what this class covers" 
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={classForm.control}
+                      name="type"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Type</FormLabel>
+                          <Select 
+                            onValueChange={field.onChange} 
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select type" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="gi">Gi</SelectItem>
+                              <SelectItem value="no-gi">No-Gi</SelectItem>
+                              <SelectItem value="open-mat">Open Mat</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={classForm.control}
+                      name="level"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Level</FormLabel>
+                          <Select 
+                            onValueChange={field.onChange} 
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select level" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="beginner">Beginner</SelectItem>
+                              <SelectItem value="intermediate">Intermediate</SelectItem>
+                              <SelectItem value="advanced">Advanced</SelectItem>
+                              <SelectItem value="all-levels">All Levels</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  
+                  <FormField
+                    control={classForm.control}
+                    name="maxCapacity"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Max Capacity</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="number" 
+                            min={1}
+                            {...field}
+                            onChange={(e) => field.onChange(Number(e.target.value))}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Maximum number of students allowed in this class
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <DialogFooter>
+                    <Button 
+                      type="submit" 
+                      disabled={saveMutation.isPending}
+                    >
+                      {saveMutation.isPending ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        <>Save</>
+                      )}
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
           
           <Tabs defaultValue="classes" value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="grid w-full grid-cols-2 mb-6">
