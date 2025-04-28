@@ -168,22 +168,7 @@ export default function NavHeader() {
           </nav>
         </div>
 
-        <div className="flex items-center space-x-3">
-          {/* Coach Portal Button - Only visible for instructors and admins */}
-          {(user.role === "instructor" || user.role === "admin") && (
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="hidden md:flex items-center text-primary border-primary hover:bg-primary/10"
-              asChild
-            >
-              <Link href="/coach-portal">
-                <Award className="mr-2 h-4 w-4" />
-                Coach Portal
-              </Link>
-            </Button>
-          )}
-          
+        <div className="flex items-center space-x-3">          
           {/* Mobile Menu Button - Moved to the right */}
           <Button
             variant="ghost"
@@ -214,17 +199,14 @@ export default function NavHeader() {
               <DropdownMenuItem>Profile</DropdownMenuItem>
               <DropdownMenuItem>Settings</DropdownMenuItem>
               
-              {/* Coach Portal link in dropdown for mobile */}
+              {/* Coach Portal link in dropdown - only visible for instructors and admins */}
               {(user.role === "instructor" || user.role === "admin") && (
-                <>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link href="/coach-portal" className="flex items-center">
-                      <Award className="mr-2 h-4 w-4" />
-                      Coach Portal
-                    </Link>
-                  </DropdownMenuItem>
-                </>
+                <DropdownMenuItem asChild>
+                  <Link href="/coach-portal" className="flex items-center">
+                    <Award className="mr-2 h-4 w-4" />
+                    Coach Portal
+                  </Link>
+                </DropdownMenuItem>
               )}
               
               <DropdownMenuSeparator />
