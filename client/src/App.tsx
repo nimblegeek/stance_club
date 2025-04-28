@@ -8,7 +8,8 @@ import ClassManagement from "@/pages/class-management";
 import MembersPage from "@/pages/members-page";
 import EventsPage from "@/pages/events-page";
 import ReportsPage from "@/pages/reports-page";
-import { ProtectedRoute, AdminRoute } from "./lib/protected-route";
+import CoachPortal from "@/pages/coach-portal";
+import { ProtectedRoute, AdminRoute, InstructorRoute } from "./lib/protected-route";
 import { AuthProvider } from "./hooks/use-auth";
 
 function Router() {
@@ -19,6 +20,7 @@ function Router() {
       <ProtectedRoute path="/members" component={MembersPage} />
       <ProtectedRoute path="/events" component={EventsPage} />
       <AdminRoute path="/reports" component={ReportsPage} />
+      <InstructorRoute path="/coach-portal" component={CoachPortal} />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>

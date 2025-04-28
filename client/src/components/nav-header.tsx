@@ -169,6 +169,21 @@ export default function NavHeader() {
         </div>
 
         <div className="flex items-center space-x-3">
+          {/* Coach Portal Button - Only visible for instructors and admins */}
+          {(user.role === "instructor" || user.role === "admin") && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="hidden md:flex items-center text-primary border-primary hover:bg-primary/10"
+              asChild
+            >
+              <Link href="/coach-portal">
+                <Award className="mr-2 h-4 w-4" />
+                Coach Portal
+              </Link>
+            </Button>
+          )}
+          
           {/* Mobile Menu Button - Moved to the right */}
           <Button
             variant="ghost"
@@ -189,10 +204,29 @@ export default function NavHeader() {
             <DropdownMenuContent align="end" className="w-56">
               <div className="px-2 py-1.5">
                 <p className="text-sm font-medium">{user.username}</p>
+                {user.role && (
+                  <p className="text-xs text-muted-foreground">
+                    {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                  </p>
+                )}
               </div>
               <DropdownMenuSeparator />
               <DropdownMenuItem>Profile</DropdownMenuItem>
               <DropdownMenuItem>Settings</DropdownMenuItem>
+              
+              {/* Coach Portal link in dropdown for mobile */}
+              {(user.role === "instructor" || user.role === "admin") && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/coach-portal" className="flex items-center">
+                      <Award className="mr-2 h-4 w-4" />
+                      Coach Portal
+                    </Link>
+                  </DropdownMenuItem>
+                </>
+              )}
+              
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout} className="text-red-500">
                 <LogOut className="mr-2 h-4 w-4" />
