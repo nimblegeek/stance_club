@@ -10,16 +10,24 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { 
-  Search, Bell, Menu, Home, Calendar, 
-  Users, BookOpen, BarChart, Award, LogOut, 
-  Loader2 
+import {
+  Search,
+  Bell,
+  Menu,
+  Home,
+  Calendar,
+  Users,
+  BookOpen,
+  BarChart,
+  Award,
+  LogOut,
+  Loader2,
 } from "lucide-react";
 
 export default function NavHeader() {
   const { user, logoutMutation, isLoading } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  
+
   if (isLoading) {
     return (
       <header className="bg-card border-b border-border px-4 py-3">
@@ -28,10 +36,16 @@ export default function NavHeader() {
             <div className="flex items-center mr-8">
               <Button variant="ghost" className="p-0 mr-2 text-primary" asChild>
                 <a href="#" className="flex items-center">
-                  <svg className="h-8 w-8" fill="currentColor" viewBox="0 0 24 24">
+                  <svg
+                    className="h-8 w-8"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
                   </svg>
-                  <span className="ml-2 text-lg font-bold text-card-foreground">DojoMaster</span>
+                  <span className="ml-2 text-lg font-bold text-card-foreground">
+                    Stance
+                  </span>
                 </a>
               </Button>
             </div>
@@ -50,10 +64,16 @@ export default function NavHeader() {
             <div className="flex items-center mr-8">
               <Button variant="ghost" className="p-0 mr-2 text-primary" asChild>
                 <a href="#" className="flex items-center">
-                  <svg className="h-8 w-8" fill="currentColor" viewBox="0 0 24 24">
+                  <svg
+                    className="h-8 w-8"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
                   </svg>
-                  <span className="ml-2 text-lg font-bold text-card-foreground">DojoMaster</span>
+                  <span className="ml-2 text-lg font-bold text-card-foreground">
+                    Stance
+                  </span>
                 </a>
               </Button>
             </div>
@@ -66,42 +86,42 @@ export default function NavHeader() {
   const handleLogout = () => {
     logoutMutation.mutate();
   };
-  
+
   const [location] = useLocation();
-  
+
   const navItems = [
-    { 
-      name: "Dashboard", 
-      icon: <Home className="h-4 w-4 mr-2" />, 
+    {
+      name: "Dashboard",
+      icon: <Home className="h-4 w-4 mr-2" />,
       path: "/",
-      active: location === "/"
+      active: location === "/",
     },
-    { 
-      name: "Classes", 
+    {
+      name: "Classes",
       icon: <Calendar className="h-4 w-4 mr-2" />,
       path: "/classes",
-      active: location === "/classes"
+      active: location === "/classes",
     },
-    { 
-      name: "Students", 
+    {
+      name: "Members",
       icon: <Users className="h-4 w-4 mr-2" />,
-      path: "/students",
-      active: location === "/students"
+      path: "/members",
+      active: location === "/members" || location.startsWith("/members/"),
     },
-    { 
-      name: "Techniques", 
+    {
+      name: "Techniques",
       icon: <BookOpen className="h-4 w-4 mr-2" />,
       path: "/techniques",
-      active: location === "/techniques"
+      active: location === "/techniques",
     },
-    { 
-      name: "Promotions", 
+    {
+      name: "Promotions",
       icon: <Award className="h-4 w-4 mr-2" />,
       path: "/promotions",
-      active: location === "/promotions"
+      active: location === "/promotions",
     },
   ];
-  
+
   return (
     <header className="bg-card border-b border-border px-4 py-3">
       <div className="container mx-auto flex justify-between items-center">
@@ -109,49 +129,61 @@ export default function NavHeader() {
           <div className="flex items-center mr-8">
             <Button variant="ghost" className="p-0 mr-2 text-primary" asChild>
               <Link href="/" className="flex items-center">
-                <svg className="h-8 w-8" fill="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="h-8 w-8"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
                 </svg>
-                <span className="ml-2 text-lg font-bold text-card-foreground">DojoMaster</span>
+                <span className="ml-3 text-xl font-bold text-card-foreground">
+                  Stance
+                </span>
               </Link>
             </Button>
           </div>
-          
+
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
             {navItems.map((item) => (
-              <Button 
+              <Button
                 key={item.name}
-                variant="ghost" 
-                className={`text-sm ${item.active ? 'text-card-foreground' : 'text-muted-foreground'} hover:text-card-foreground`}
+                variant="ghost"
+                className={`text-sm ${item.active ? "text-card-foreground" : "text-muted-foreground"} hover:text-card-foreground`}
                 asChild
               >
-                <Link href={item.path}>
-                  {item.name}
-                </Link>
+                <Link href={item.path}>{item.name}</Link>
               </Button>
             ))}
           </nav>
-          
+
           {/* Mobile Menu Button */}
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="md:hidden" 
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             <Menu className="h-5 w-5" />
           </Button>
         </div>
-        
+
         <div className="flex items-center space-x-3">
-          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-card-foreground">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-muted-foreground hover:text-card-foreground"
+          >
             <Search className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-card-foreground">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-muted-foreground hover:text-card-foreground"
+          >
             <Bell className="h-5 w-5" />
           </Button>
-          
+
           {/* User Profile Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -175,16 +207,16 @@ export default function NavHeader() {
           </DropdownMenu>
         </div>
       </div>
-      
+
       {/* Mobile Navigation Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden py-2 px-4 mt-2 bg-accent rounded-md">
           <nav className="flex flex-col space-y-2">
             {navItems.map((item) => (
-              <Button 
+              <Button
                 key={item.name}
-                variant="ghost" 
-                className={`justify-start ${item.active ? 'text-card-foreground' : 'text-muted-foreground'} hover:text-card-foreground`}
+                variant="ghost"
+                className={`justify-start ${item.active ? "text-card-foreground" : "text-muted-foreground"} hover:text-card-foreground`}
                 asChild
               >
                 <Link href={item.path}>

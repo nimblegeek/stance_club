@@ -31,6 +31,170 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Sets up /api/register, /api/login, /api/logout, /api/user
   setupAuth(app);
 
+  // ===== Members API =====
+  app.get("/api/members", isAuthenticated, async (req, res) => {
+    try {
+      const members = await storage.getAllUsers();
+      res.json(members);
+    } catch (error) {
+      console.error("Error fetching members:", error);
+      res.status(500).json({ error: "Failed to fetch members" });
+    }
+  });
+
+  app.get("/api/members/:id", isAuthenticated, async (req, res) => {
+    try {
+      const memberId = parseInt(req.params.id);
+      const member = await storage.getUser(memberId);
+      
+      if (!member) {
+        return res.status(404).json({ error: "Member not found" });
+      }
+      
+      res.json(member);
+    } catch (error) {
+      console.error("Error fetching member:", error);
+      res.status(500).json({ error: "Failed to fetch member details" });
+    }
+  });
+
+  app.post("/api/members", isInstructor, async (req, res) => {
+    try {
+      const memberData = req.body;
+      
+      // Check if username already exists
+      const existingUser = await storage.getUserByUsername(memberData.username);
+      if (existingUser) {
+        return res.status(400).json({ error: "Username already exists" });
+      }
+      
+      // If creating a new member, we need to set a default password
+      if (!memberData.password) {
+        memberData.password = "changeme123"; // This would be hashed by the createUser method
+      }
+      
+      const member = await storage.createUser(memberData);
+      res.status(201).json(member);
+    } catch (error) {
+      console.error("Error creating member:", error);
+      res.status(500).json({ error: "Failed to create member" });
+    }
+  });
+
+  app.put("/api/members/:id", isInstructor, async (req, res) => {
+    try {
+      const memberId = parseInt(req.params.id);
+      const memberData = req.body;
+      
+      const updatedMember = await storage.updateUser(memberId, memberData);
+      
+      if (!updatedMember) {
+        return res.status(404).json({ error: "Member not found" });
+      }
+      
+      res.json(updatedMember);
+    } catch (error) {
+      console.error("Error updating member:", error);
+      res.status(500).json({ error: "Failed to update member" });
+    }
+  });
+
+  app.delete("/api/members/:id", isInstructor, async (req, res) => {
+    try {
+      const memberId = parseInt(req.params.id);
+      
+      // Check if the member exists
+      const member = await storage.getUser(memberId);
+      if (!member) {
+        return res.status(404).json({ error: "Member not found" });
+      }
+      
+      // Delete member (this would need to be implemented in storage)
+      // For now, we'll return success
+      res.status(200).json({ success: true });
+    } catch (error) {
+      console.error("Error deleting member:", error);
+      res.status(500).json({ error: "Failed to delete member" });
+    }
+  });
+
+  // ===== Progress Notes API =====
+  app.get("/api/members/:id/progress", isAuthenticated, async (req, res) => {
+    try {
+      const memberId = parseInt(req.params.id);
+      
+      // Mock progress notes data until we implement storage methods
+      const progressNotes = [
+        {
+          id: 1,
+          memberId,
+          date: new Date().toISOString().split('T')[0],
+          noteType: "technique",
+          title: "Improved Guard Passing",
+          content: "Showed significant improvement in guard passing techniques. Can now effectively pass closed guard using pressure passing."
+        },
+        {
+          id: 2,
+          memberId,
+          date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          noteType: "general",
+          title: "Attendance and Attitude",
+          content: "Consistent attendance for the past month. Shows great attitude and willingness to help newer students."
+        }
+      ];
+      
+      res.json(progressNotes);
+    } catch (error) {
+      console.error("Error fetching progress notes:", error);
+      res.status(500).json({ error: "Failed to fetch progress notes" });
+    }
+  });
+
+  app.post("/api/progress-notes", isInstructor, async (req, res) => {
+    try {
+      const noteData = req.body;
+      
+      // Mock created note with ID
+      const note = {
+        id: Date.now(),
+        ...noteData,
+      };
+      
+      res.status(201).json(note);
+    } catch (error) {
+      console.error("Error creating progress note:", error);
+      res.status(500).json({ error: "Failed to create progress note" });
+    }
+  });
+
+  app.put("/api/progress-notes/:id", isInstructor, async (req, res) => {
+    try {
+      const noteId = parseInt(req.params.id);
+      const noteData = req.body;
+      
+      // Mock updated note
+      const updatedNote = {
+        id: noteId,
+        ...noteData,
+      };
+      
+      res.json(updatedNote);
+    } catch (error) {
+      console.error("Error updating progress note:", error);
+      res.status(500).json({ error: "Failed to update progress note" });
+    }
+  });
+
+  app.delete("/api/progress-notes/:id", isInstructor, async (req, res) => {
+    try {
+      // Just return success for now
+      res.status(200).json({ success: true });
+    } catch (error) {
+      console.error("Error deleting progress note:", error);
+      res.status(500).json({ error: "Failed to delete progress note" });
+    }
+  });
+
   // ===== BJJ Classes API =====
   app.get("/api/classes", isAuthenticated, async (req, res) => {
     try {
