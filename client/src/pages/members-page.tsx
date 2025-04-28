@@ -57,6 +57,7 @@ import {
 } from "lucide-react";
 import UserAvatar from "@/components/user-avatar";
 import { PageHeader } from "@/components/page-header";
+import NavHeader from "@/components/nav-header";
 
 // Form schemas
 const memberSchema = z.object({
@@ -81,8 +82,6 @@ const progressNoteSchema = z.object({
 });
 
 // Main component
-import NavHeader from "@/components/nav-header";
-
 export default function MembersPage() {
   const { user } = useAuth();
   const { toast } = useToast();
