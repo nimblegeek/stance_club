@@ -7,6 +7,7 @@ import ProjectCard from "@/components/project-card";
 import CalendarView from "@/components/calendar-view";
 import AssignmentsPanel from "@/components/assignments-panel";
 import AdminButton from "@/components/admin-button";
+import AdminLand from "@/components/admin-land";
 
 // BJJ classes and events data
 const bjjClasses = [
@@ -125,13 +126,17 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Schedule and Student Progress Section */}
+          {/* Schedule and Other Panels Section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Calendar Schedule */}
             <CalendarView />
             
-            {/* Student Progress Panel */}
-            <AssignmentsPanel />
+            {/* Admin Land or Student Progress Panel based on user role */}
+            {user.role === "admin" ? (
+              <AdminLand />
+            ) : (
+              <AssignmentsPanel />
+            )}
           </div>
         </div>
       </main>
