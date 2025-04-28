@@ -31,6 +31,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Sets up /api/register, /api/login, /api/logout, /api/user
   setupAuth(app);
 
+  // Special endpoint to make the logged-in user an admin (for testing only)
+  app.post("/api/become-admin", isAuthenticated, async (req, res) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+      
+      const userId = req.user.id;
+      const updatedUser = await storage.updateUser(userId, { role: "admin" });
+      
+      if (!updatedUser) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      
+      // Update the session user object
+      req.login(updatedUser, (err) => {
+        if (err) {
+          return res.status(500).json({ error: "Failed to update session" });
+        }
+        res.json(updatedUser);
+      });
+    } catch (error) {
+      console.error("Error updating user to admin:", error);
+      res.status(500).json({ error: "Failed to update user to admin" });
+    }
+  });
+
   // ===== Members API =====
   app.get("/api/members", isAuthenticated, async (req, res) => {
     try {
