@@ -75,7 +75,6 @@ export default function Dashboard() {
             title="Dashboard"
             description="Welcome to DojoMaster"
             breadcrumbs={[{ label: "Dashboard" }]}
-            actions={<AdminLink />}
           />
           
           {/* Account Info & Actions */}

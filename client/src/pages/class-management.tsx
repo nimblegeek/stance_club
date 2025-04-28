@@ -4,7 +4,6 @@ import { useAuth } from "@/hooks/use-auth";
 import { PageHeader } from "@/components/page-header";
 import NavHeader from "@/components/nav-header";
 import ClassScheduler from "@/components/class-scheduler";
-import AdminLink from "@/components/admin-link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -204,17 +203,14 @@ export default function ClassManagement() {
             description="Create and manage your classes"
             breadcrumbs={[{ label: "Classes" }]}
             actions={
-              <div className="flex space-x-2">
-                <AdminLink />
-                <Dialog open={isClassDialogOpen} onOpenChange={handleDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button>
-                      <Plus className="mr-2 h-4 w-4" />
-                      Add Class
-                    </Button>
-                  </DialogTrigger>
-                </Dialog>
-              </div>
+              <Dialog open={isClassDialogOpen} onOpenChange={handleDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Class
+                  </Button>
+                </DialogTrigger>
+              </Dialog>
             }
           />
           

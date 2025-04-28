@@ -22,6 +22,7 @@ import {
   Award,
   LogOut,
   Loader2,
+  Key,
 } from "lucide-react";
 
 export default function NavHeader() {
@@ -205,6 +206,16 @@ export default function NavHeader() {
                   <Link href="/coach-portal" className="flex items-center">
                     <Award className="mr-2 h-4 w-4" />
                     Coach Portal
+                  </Link>
+                </DropdownMenuItem>
+              )}
+              
+              {/* Admin Land link in dropdown - only visible for admins */}
+              {user.role === "admin" && (
+                <DropdownMenuItem asChild>
+                  <Link href="/admin-land" className="flex items-center">
+                    <Key className="mr-2 h-4 w-4" />
+                    Admin Land
                   </Link>
                 </DropdownMenuItem>
               )}
