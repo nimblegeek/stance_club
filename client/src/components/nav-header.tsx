@@ -115,10 +115,10 @@ export default function NavHeader() {
       active: location === "/events",
     },
     {
-      name: "Promotions",
-      icon: <Award className="h-4 w-4 mr-2" />,
-      path: "/promotions",
-      active: location === "/promotions",
+      name: "Reports",
+      icon: <BarChart className="h-4 w-4 mr-2" />,
+      path: "/reports",
+      active: location === "/reports",
     },
   ];
 
