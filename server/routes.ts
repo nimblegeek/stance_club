@@ -11,6 +11,22 @@ import {
 } from "@shared/schema";
 import { z } from "zod";
 
+// Initialize Stripe conditionally if the API key is available
+let stripe: any = null;
+if (process.env.STRIPE_SECRET_KEY) {
+  try {
+    const Stripe = require("stripe");
+    stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: "2023-10-16",
+    });
+    console.log("Stripe integration initialized");
+  } catch (error) {
+    console.error("Failed to initialize Stripe:", error);
+  }
+} else {
+  console.log("Stripe integration not available: STRIPE_SECRET_KEY environment variable not set");
+}
+
 // Middleware to check if user is authenticated
 const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
   if (req.isAuthenticated()) {
