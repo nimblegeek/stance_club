@@ -6,8 +6,6 @@ import AccountHeader from "@/components/account-header";
 import ProjectCard from "@/components/project-card";
 import CalendarView from "@/components/calendar-view";
 import AssignmentsPanel from "@/components/assignments-panel";
-import AdminButton from "@/components/admin-button";
-import AdminLink from "@/components/admin-link";
 
 // BJJ classes and events data
 const bjjClasses = [
@@ -79,14 +77,6 @@ export default function Dashboard() {
           
           {/* Account Info & Actions */}
           <AccountHeader username={user.username} />
-          
-          {/* Admin Access Button for testing */}
-          <div className="mb-6 flex flex-col items-center">
-            <p className="text-muted-foreground text-sm mb-2">
-              Need access to Reports? Click below to grant admin privileges:
-            </p>
-            <AdminButton />
-          </div>
 
           {/* Classes Section */}
           <div className="mb-10">
