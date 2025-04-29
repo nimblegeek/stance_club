@@ -71,7 +71,7 @@ export default function Dashboard() {
         <div className="container mx-auto">
           <PageHeader
             title="Dashboard"
-            description="Welcome to DojoMaster"
+            description="Be on top of what's happening, on and off mat"
             breadcrumbs={[{ label: "Dashboard" }]}
           />
           

@@ -54,7 +54,7 @@ export default function CalendarView() {
     <Card className="bg-card border-border">
       <CardContent className="p-4">
         <div className="bg-accent text-accent-foreground py-1 px-3 text-sm font-medium rounded-md mb-4 inline-block">
-          DOJO SCHEDULE
+          MAT SCHEDULE
         </div>
         
         {/* Calendar Header */}
