@@ -11,6 +11,7 @@ import ReportsPage from "@/pages/reports-page";
 import CoachPortal from "@/pages/coach-portal";
 import AdminLand from "@/pages/admin-land";
 import PaymentsPage from "@/pages/payments-page";
+import CheckoutPage from "@/pages/checkout-page";
 import { ProtectedRoute, AdminRoute, InstructorRoute } from "./lib/protected-route";
 import { AuthProvider } from "./hooks/use-auth";
 
@@ -25,6 +26,7 @@ function Router() {
       <InstructorRoute path="/coach-portal" component={CoachPortal} />
       <AdminRoute path="/admin-land" component={AdminLand} />
       <ProtectedRoute path="/payments" component={PaymentsPage} />
+      <ProtectedRoute path="/checkout" component={CheckoutPage} />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>

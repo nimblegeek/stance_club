@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,10 +16,28 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 export default function PaymentsPage() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const [location, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState("payment-methods");
   
   // Check if Stripe is properly configured
   const isStripeConfigured = !!import.meta.env.VITE_STRIPE_PUBLIC_KEY;
+  
+  // Check for status in URL parameters (e.g., after returning from checkout)
+  useEffect(() => {
+    const params = new URLSearchParams(location.split('?')[1]);
+    const status = params.get('status');
+    
+    if (status === 'success') {
+      toast({
+        title: "Payment Successful",
+        description: "Your payment has been processed successfully.",
+        duration: 5000,
+      });
+      
+      // Remove the status parameter from the URL to prevent showing the message again on refresh
+      setLocation('/payments');
+    }
+  }, [location, toast, setLocation]);
   
   const handleAddPayment = () => {
     if (!isStripeConfigured) {
@@ -30,11 +49,8 @@ export default function PaymentsPage() {
       return;
     }
     
-    // This would normally open a Stripe payment form
-    toast({
-      title: "Feature not available",
-      description: "The payment functionality will be available once Stripe is fully configured.",
-    });
+    // Navigate to checkout page for payment
+    setLocation('/checkout');
   };
 
   return (
