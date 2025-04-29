@@ -6,6 +6,7 @@ import { z } from "zod";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
+import InviteLinkDialog from "@/components/invite-link";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -418,6 +419,7 @@ export default function MembersPage() {
         breadcrumbs={[{ label: "Members" }]}
         actions={
           <div className="flex items-center gap-2">
+            <InviteLinkDialog />
             {isInstructor && (
               <Dialog open={isDialogOpen} onOpenChange={handleMemberDialogChange}>
                 <DialogTrigger asChild>
