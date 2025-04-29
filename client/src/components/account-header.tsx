@@ -12,8 +12,6 @@ export default function AccountHeader({ username }: AccountHeaderProps) {
         <h1 className="text-2xl font-bold text-card-foreground">{username}</h1>
         <div className="text-sm hover:text-card-foreground">
           <Button variant="ghost" className="flex items-center text-muted-foreground hover:text-card-foreground">
-            <Award className="h-4 w-4 mr-1" />
-            <span>Instructor Portal</span>
           </Button>
         </div>
       </div>
