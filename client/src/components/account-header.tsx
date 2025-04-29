@@ -16,7 +16,11 @@ export default function AccountHeader({ username }: AccountHeaderProps) {
         </div>
       </div>
       <div className="flex flex-wrap gap-3">
-        <Button variant="default" className="rounded-full bg-primary hover:bg-primary/90">
+        <Button 
+          variant="default" 
+          className="rounded-full bg-primary hover:bg-primary/90"
+          onClick={() => window.location.href = '/classes'}
+        >
           Create a new class or event
         </Button>
         <Button variant="outline" className="rounded-full bg-transparent border-border hover:bg-accent">
