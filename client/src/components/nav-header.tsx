@@ -23,6 +23,7 @@ import {
   LogOut,
   Loader2,
   Key,
+  CreditCard,
 } from "lucide-react";
 
 export default function NavHeader() {
@@ -117,6 +118,12 @@ export default function NavHeader() {
       icon: <Calendar className="h-4 w-4 mr-2" />,
       path: "/events",
       active: location === "/events",
+    },
+    {
+      name: "Payments",
+      icon: <CreditCard className="h-4 w-4 mr-2" />,
+      path: "/payments",
+      active: location === "/payments",
     },
   ];
   

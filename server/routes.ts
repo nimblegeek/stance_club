@@ -605,6 +605,124 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Create HTTP server
+  // ===== Stripe Payment API =====
+  // These endpoints are boilerplate templates that will work once Stripe is fully configured
+  
+  // Create a payment intent for one-time payments
+  app.post("/api/create-payment-intent", isAuthenticated, async (req, res) => {
+    try {
+      if (!stripe) {
+        return res.status(503).json({ 
+          error: "Stripe payment processing is not available. Please configure Stripe API keys."
+        });
+      }
+      
+      const { amount, currency = "usd" } = req.body;
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ error: "Valid amount is required" });
+      }
+      
+      // Convert amount to cents (Stripe uses smallest currency unit)
+      const amountInCents = Math.round(amount * 100);
+      
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amountInCents,
+        currency,
+        // Optional metadata can be added here
+        metadata: {
+          userId: req.user?.id.toString(),
+          username: req.user?.username
+        }
+      });
+      
+      res.json({
+        clientSecret: paymentIntent.client_secret
+      });
+    } catch (error: any) {
+      console.error("Error creating payment intent:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+  
+  // Create or get subscription
+  app.post("/api/create-subscription", isAuthenticated, async (req, res) => {
+    try {
+      if (!stripe) {
+        return res.status(503).json({ 
+          error: "Stripe payment processing is not available. Please configure Stripe API keys."
+        });
+      }
+      
+      const { priceId } = req.body;
+      
+      if (!priceId) {
+        return res.status(400).json({ error: "Price ID is required" });
+      }
+      
+      const userId = req.user?.id;
+      
+      // In a real implementation, we would:
+      // 1. Get or create a Stripe customer for this user
+      // 2. Check if customer already has an active subscription
+      // 3. Create a new subscription or return existing one
+      
+      // Mock implementation that would be replaced with real code
+      const mockSubscription = {
+        subscriptionId: "sub_mock_" + Date.now(),
+        clientSecret: "mock_client_secret_" + Date.now(),
+        message: "This is a mock subscription. Configure Stripe to enable real subscriptions."
+      };
+      
+      res.json(mockSubscription);
+    } catch (error: any) {
+      console.error("Error creating subscription:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+  
+  // Get customer payment methods
+  app.get("/api/payment-methods", isAuthenticated, async (req, res) => {
+    try {
+      if (!stripe) {
+        return res.status(503).json({ 
+          error: "Stripe payment processing is not available. Please configure Stripe API keys."
+        });
+      }
+      
+      // In a real implementation, we would:
+      // 1. Get the Stripe customer ID for this user
+      // 2. Fetch all payment methods for this customer
+      
+      // Return empty array for now
+      res.json([]);
+    } catch (error: any) {
+      console.error("Error fetching payment methods:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+  
+  // Get customer subscription
+  app.get("/api/subscription", isAuthenticated, async (req, res) => {
+    try {
+      if (!stripe) {
+        return res.status(503).json({ 
+          error: "Stripe payment processing is not available. Please configure Stripe API keys."
+        });
+      }
+      
+      // In a real implementation, we would:
+      // 1. Get the Stripe customer ID for this user
+      // 2. Fetch all active subscriptions for this customer
+      
+      // Return null for now
+      res.json(null);
+    } catch (error: any) {
+      console.error("Error fetching subscription:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+  
   const httpServer = createServer(app);
 
   return httpServer;
