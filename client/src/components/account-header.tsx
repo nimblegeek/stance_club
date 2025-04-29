@@ -1,11 +1,15 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Keyboard, Award } from "lucide-react";
+import InviteLinkDialog from "./invite-link";
 
 interface AccountHeaderProps {
   username: string;
 }
 
 export default function AccountHeader({ username }: AccountHeaderProps) {
+  const [showInviteDialog, setShowInviteDialog] = useState(false);
+  
   return (
     <div className="mb-8">
       <div className="flex justify-between items-center mb-4">
@@ -23,9 +27,15 @@ export default function AccountHeader({ username }: AccountHeaderProps) {
         >
           Create a new class or event
         </Button>
-        <Button variant="outline" className="rounded-full bg-transparent border-border hover:bg-accent">
-          Invite new students
+        <Button 
+          variant="outline" 
+          className="rounded-full bg-transparent border-border hover:bg-accent"
+          onClick={() => setShowInviteDialog(true)}
+        >
+          Invite people
         </Button>
+
+        <InviteLinkDialog open={showInviteDialog} onOpenChange={setShowInviteDialog} />
       </div>
       <div className="mt-3 text-sm text-muted-foreground">
         <span>View belt requirements</span>
