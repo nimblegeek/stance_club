@@ -27,13 +27,6 @@ export default function AccountHeader({ username }: AccountHeaderProps) {
         >
           Create a new class or event
         </Button>
-        <Button 
-          variant="outline" 
-          className="rounded-full bg-transparent border-border hover:bg-accent"
-          onClick={() => setShowInviteDialog(true)}
-        >
-          Invite people
-        </Button>
 
         <InviteLinkDialog open={showInviteDialog} onOpenChange={setShowInviteDialog} />
       </div>
@@ -46,7 +39,7 @@ export default function AccountHeader({ username }: AccountHeaderProps) {
             <Keyboard className="h-3 w-3 inline mr-0.5" />
             J
           </kbd> 
-          to view techniques
+          to view events
         </span>
       </div>
     </div>
