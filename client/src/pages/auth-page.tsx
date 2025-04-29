@@ -2,6 +2,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { z } from "zod";
+import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { insertUserSchema } from "@shared/schema";
@@ -29,7 +30,23 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export default function AuthPage() {
   const { user, loginMutation, registerMutation } = useAuth();
   const [, navigate] = useLocation();
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<string>("login");
+  
+  // Parse URL parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  const isInvite = urlParams.get('invite') === 'true';
+  
+  // Set active tab to register if invite parameter is present
+  useEffect(() => {
+    if (isInvite) {
+      setActiveTab("register");
+      toast({
+        title: "Invitation received!",
+        description: "You've been invited to join this BJJ club. Please register to continue.",
+      });
+    }
+  }, [isInvite, toast]);
 
   // Redirect if already logged in
   useEffect(() => {
@@ -219,6 +236,16 @@ export default function AuthPage() {
               </TabsContent>
 
               <TabsContent value="register">
+                {isInvite && (
+                  <div className="mb-4 p-3 rounded bg-primary/10 border border-primary/20 text-foreground">
+                    <p className="text-sm font-medium">
+                      You've been invited to join a BJJ club!
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Please complete the registration to gain access to the platform.
+                    </p>
+                  </div>
+                )}
                 <Form {...registerForm}>
                   <form
                     onSubmit={registerForm.handleSubmit(onRegisterSubmit)}
